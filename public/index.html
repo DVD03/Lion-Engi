@@ -298,6 +298,8 @@
   <!-- 2. MAIN APPLICATION DASHBOARDS (AFTER AUTHENTICATION) -->
   <!-- ============================================================ -->
   <div id="main-app-container" style="display:none;">
+    <!-- Mobile sidebar overlay -->
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeMobileSidebar()"></div>
     <div class="app-layout">
       <!-- Sidebar Navigation -->
       <aside class="sidebar">
@@ -397,6 +399,10 @@
           </div>
 
           <div class="topbar-actions">
+            <!-- Hamburger for mobile sidebar -->
+            <button class="btn-hamburger" id="btn-hamburger" onclick="toggleMobileSidebar()" title="Open navigation menu" aria-label="Toggle sidebar">
+              <i class="fa-solid fa-bars"></i>
+            </button>
             <!-- Active Rental Counter Pill (Visible for Logged In Customer) -->
             <button class="header-lease-pill" id="header-active-lease-btn" onclick="switchTab('customer-portal')" style="display:none;" title="View your active jobsite leases">
               <span class="pulse-dot-green"></span>

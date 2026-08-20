@@ -849,6 +849,41 @@ document.addEventListener('click', (e) => {
   }
 });
 
+// ----------------------------------------------------
+// MOBILE SIDEBAR TOGGLE
+// ----------------------------------------------------
+function openMobileSidebar() {
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  if (sidebar) sidebar.classList.add('open');
+  if (overlay) overlay.classList.add('visible');
+  document.body.style.overflow = 'hidden'; // prevent background scroll
+}
+
+function closeMobileSidebar() {
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  if (sidebar) sidebar.classList.remove('open');
+  if (overlay) overlay.classList.remove('visible');
+  document.body.style.overflow = '';
+}
+
+function toggleMobileSidebar() {
+  const sidebar = document.querySelector('.sidebar');
+  if (sidebar && sidebar.classList.contains('open')) {
+    closeMobileSidebar();
+  } else {
+    openMobileSidebar();
+  }
+}
+
+// Close mobile sidebar automatically when a nav item is tapped
+document.querySelectorAll('.nav-item').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    if (window.innerWidth <= 900) closeMobileSidebar();
+  });
+});
+
 // Update UI Layout based on Authentication State
 function updateAuthUI() {
   const landingContainer = document.getElementById('landing-auth-container');
