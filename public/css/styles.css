@@ -1519,8 +1519,24 @@ body {
 .category-pills {
   display: flex;
   gap: 8px;
-  flex-wrap: wrap;
+  overflow-x: auto;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
   align-items: center;
+  padding: 4px 2px;
+  width: 100%;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.category-pills::-webkit-scrollbar {
+  height: 4px;
+}
+
+.category-pills::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
 }
 
 .pill {
@@ -1533,6 +1549,8 @@ body {
   font-weight: 600;
   cursor: pointer;
   transition: var(--transition);
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .pill:hover {
@@ -1945,7 +1963,9 @@ body {
 
 .catalog-search-box {
   position: relative;
-  min-width: 320px;
+  width: 100%;
+  max-width: 380px;
+  min-width: 0;
   display: flex;
   align-items: center;
 }
@@ -1955,6 +1975,7 @@ body {
   left: 14px;
   color: #94a3b8;
   font-size: 14px;
+  pointer-events: none;
 }
 
 .catalog-search-box input {
@@ -2001,11 +2022,26 @@ body {
 .category-pills-bar {
   display: flex;
   gap: 8px;
-  flex-wrap: wrap;
+  overflow-x: auto;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
   align-items: center;
   margin-top: 18px;
-  padding-top: 16px;
+  padding: 16px 2px 6px 2px;
   border-top: 1px solid var(--border-color);
+  width: 100%;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.category-pills-bar::-webkit-scrollbar {
+  height: 4px;
+}
+
+.category-pills-bar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
 }
 
 .cat-pill-btn {
@@ -2021,6 +2057,8 @@ body {
   align-items: center;
   gap: 8px;
   transition: var(--transition);
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .cat-pill-btn:hover {
@@ -3688,6 +3726,93 @@ body {
     width: 100%;
   }
 
+  /* Horizontal Scroll Category Filter Bars */
+  .category-pills,
+  .category-pills-bar,
+  #catalog-category-pills,
+  #inventory-category-pills {
+    display: flex !important;
+    overflow-x: auto !important;
+    flex-wrap: nowrap !important;
+    white-space: nowrap !important;
+    -webkit-overflow-scrolling: touch;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 8px 2px 10px 2px !important;
+    gap: 8px !important;
+    scrollbar-width: thin;
+    margin-top: 10px !important;
+  }
+
+  .cat-pill-btn,
+  .pill {
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+    font-size: 12px !important;
+    padding: 6px 12px !important;
+  }
+
+  /* Catalog Header & Vertical Stacking */
+  .catalog-page-header {
+    padding: 14px 12px !important;
+    margin-bottom: 16px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .catalog-header-top {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+    width: 100% !important;
+  }
+
+  .catalog-title-group {
+    width: 100% !important;
+  }
+
+  .catalog-main-title {
+    font-size: 18px !important;
+    margin: 4px 0 2px !important;
+  }
+
+  .catalog-sub-title {
+    font-size: 12px !important;
+    line-height: 1.4 !important;
+  }
+
+  .catalog-search-box {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .catalog-search-box input {
+    font-size: 12.5px !important;
+    padding: 9px 40px 9px 34px !important;
+  }
+
+  /* Product Grid and Card Width Stacking */
+  .storefront-product-grid,
+  .tools-grid,
+  .inventory-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-top: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .tool-product-card,
+  .tool-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+  }
+
   /* Invoice Modal Sheet */
   .invoice-modal-body {
     padding: 10px;
@@ -3796,12 +3921,15 @@ img {
   height: auto;
 }
 
-/* Prevent horizontal overflow on any content section */
+/* Prevent horizontal overflow on any content section & viewport */
+html,
+body,
+.app-layout,
+.main-content,
 .tab-content,
 .modal-body,
-.glass-panel,
-.main-content,
-.app-layout {
-  min-width: 0;
-  word-break: break-word;
+.glass-panel {
+  max-width: 100vw;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
