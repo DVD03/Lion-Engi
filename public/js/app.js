@@ -850,37 +850,74 @@ document.addEventListener('click', (e) => {
 });
 
 // ----------------------------------------------------
-// MOBILE SIDEBAR TOGGLE
+// MOBILE SIDEBAR DRAWER TOGGLE
 // ----------------------------------------------------
 function openMobileSidebar() {
   const sidebar = document.querySelector('.sidebar');
   const overlay = document.getElementById('sidebar-overlay');
-  if (sidebar) sidebar.classList.add('open');
-  if (overlay) overlay.classList.add('visible');
-  document.body.style.overflow = 'hidden'; // prevent background scroll
+  if (sidebar) {
+    sidebar.classList.add('open', 'active', 'show');
+  }
+  if (overlay) {
+    overlay.classList.add('visible', 'active', 'show');
+  }
+  document.body.classList.add('sidebar-open');
 }
 
 function closeMobileSidebar() {
   const sidebar = document.querySelector('.sidebar');
   const overlay = document.getElementById('sidebar-overlay');
-  if (sidebar) sidebar.classList.remove('open');
-  if (overlay) overlay.classList.remove('visible');
-  document.body.style.overflow = '';
+  if (sidebar) {
+    sidebar.classList.remove('open', 'active', 'show');
+  }
+  if (overlay) {
+    overlay.classList.remove('visible', 'active', 'show');
+  }
+  document.body.classList.remove('sidebar-open');
 }
 
-function toggleMobileSidebar() {
+function toggleMobileSidebar(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
   const sidebar = document.querySelector('.sidebar');
-  if (sidebar && sidebar.classList.contains('open')) {
+  if (sidebar && (sidebar.classList.contains('open') || sidebar.classList.contains('active'))) {
     closeMobileSidebar();
   } else {
     openMobileSidebar();
   }
 }
 
-// Close mobile sidebar automatically when a nav item is tapped
-document.querySelectorAll('.nav-item').forEach((btn) => {
-  btn.addEventListener('click', () => {
-    if (window.innerWidth <= 900) closeMobileSidebar();
+// Expose to global window object
+window.openMobileSidebar = openMobileSidebar;
+window.closeMobileSidebar = closeMobileSidebar;
+window.toggleMobileSidebar = toggleMobileSidebar;
+
+// Attach click listeners to hamburger, overlay, close button and nav items
+document.addEventListener('DOMContentLoaded', () => {
+  const hamburgerBtn = document.getElementById('btn-hamburger');
+  if (hamburgerBtn) {
+    hamburgerBtn.addEventListener('click', toggleMobileSidebar);
+  }
+
+  const overlayEl = document.getElementById('sidebar-overlay');
+  if (overlayEl) {
+    overlayEl.addEventListener('click', closeMobileSidebar);
+  }
+
+  const closeBtn = document.getElementById('btn-sidebar-close');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', closeMobileSidebar);
+  }
+
+  // Close mobile sidebar automatically when any nav item is tapped
+  document.querySelectorAll('.nav-item').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      if (window.innerWidth <= 900) {
+        closeMobileSidebar();
+      }
+    });
   });
 });
 
