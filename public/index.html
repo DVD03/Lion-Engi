@@ -1,0 +1,2174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lions Engineering | Industrial Machinery & Tool Rental System</title>
+  <meta name="description" content="Industrial Heavy Machinery, Engineering Equipment Rental, Logistics & Maintenance Management System">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&family=Noto+Sans+Sinhala:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- ============================================================ -->
+  <!-- 1. MODERN LIGHT THEME (WHITE & YELLOW) LANDING & AUTH PORTAL -->
+  <!-- Matching User Reference Mockup -->
+  <!-- ============================================================ -->
+  <div id="landing-auth-container" class="landing-portal-wrapper">
+    <!-- Top Header Navigation Bar -->
+    <header class="portal-navbar">
+      <div class="portal-nav-brand">
+        <div class="brand-logo-icon">
+          <i class="fa-solid fa-shield-halved" style="color: #f59e0b;"></i>
+        </div>
+        <div class="brand-logo-text">
+          <span class="logo-title">LIONS ENGINEERING</span>
+          <span class="logo-slogan">INDUSTRIAL HEAVY MACHINERY &amp; TOOL HIRE</span>
+        </div>
+      </div>
+
+      <nav class="portal-nav-links">
+        <a href="javascript:void(0)" class="nav-link active">Home</a>
+        <a href="javascript:void(0)" class="nav-link" onclick="quickDemoLogin('customer', this)">Equipment Catalog</a>
+        <a href="javascript:void(0)" class="nav-link" onclick="quickDemoLogin('customer', this)">Tiered Rates</a>
+        <a href="javascript:void(0)" class="nav-link" onclick="quickDemoLogin('customer', this)">Customer Desk</a>
+      </nav>
+
+      <div class="portal-nav-actions">
+        <!-- Language Switcher -->
+        <div class="lang-switch-container">
+          <i class="fa-solid fa-globe lang-icon"></i>
+          <button class="lang-btn active" id="landing-lang-en" onclick="setLanguage('en')">EN</button>
+          <span class="lang-divider">|</span>
+          <button class="lang-btn" id="landing-lang-si" onclick="setLanguage('si')">සිංහල</button>
+        </div>
+
+        <!-- Top Right Sign Up / Sign In Action Button -->
+        <button class="btn-nav-auth" id="btn-top-auth-toggle" onclick="toggleLandingAuth('register')">
+          Sign Up
+        </button>
+      </div>
+    </header>
+
+    <!-- Main 2-Column Hero & Login/Register Section -->
+    <main class="portal-main-section">
+      <div class="portal-grid-container">
+        <!-- Left Hero Showcase Card -->
+        <div class="hero-showcase-card">
+          <div class="hero-card-text">
+            <h1 class="hero-headline">The Right Tool<br>For Every Job</h1>
+            <p class="hero-subtext">Rent high quality tools and equipment at affordable prices. Save money, work smarter.</p>
+
+            <div class="hero-feature-list">
+              <div class="hero-feat-row">
+                <div class="feat-icon-bubble">
+                  <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div class="feat-content">
+                  <strong>Quality Guaranteed</strong>
+                  <span>Well maintained & reliable tools</span>
+                </div>
+              </div>
+
+              <div class="hero-feat-row">
+                <div class="feat-icon-bubble">
+                  <i class="fa-solid fa-tags"></i>
+                </div>
+                <div class="feat-content">
+                  <strong>Affordable Prices</strong>
+                  <span>Best rates for all your projects</span>
+                </div>
+              </div>
+
+              <div class="hero-feat-row">
+                <div class="feat-icon-bubble">
+                  <i class="fa-solid fa-truck-fast"></i>
+                </div>
+                <div class="feat-content">
+                  <strong>Fast & Easy</strong>
+                  <span>Quick booking & convenient pickup</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cutout Tool Kit Image -->
+          <div class="hero-img-box">
+            <img src="images/tools_hero_showcase.jpg" alt="Makita & Bosch Power Tools Kit" onerror="this.src='images/machinery_watermark_bg.jpg'">
+          </div>
+        </div>
+
+        <!-- Right White Login / Register Card -->
+        <div class="auth-card-container">
+          <div class="auth-card-inner">
+            <!-- Center Avatar Icon -->
+            <div class="auth-avatar-circle">
+              <i class="fa-regular fa-user"></i>
+            </div>
+
+            <div class="auth-header-text">
+              <h2 id="auth-title"><span>Welcome Back!</span></h2>
+              <p id="auth-subtitle">Login to access your account</p>
+            </div>
+
+            <!-- SIGN IN FORM -->
+            <form id="landing-form-login" class="portal-auth-form">
+              <div class="form-group-field">
+                <label>Email Address</label>
+                <div class="input-wrap">
+                  <i class="fa-regular fa-envelope field-icon"></i>
+                  <input type="email" id="landing-login-email" placeholder="Enter your email address" value="admin@lions.lk" required>
+                </div>
+              </div>
+
+              <div class="form-group-field">
+                <label>Password</label>
+                <div class="input-wrap">
+                  <i class="fa-solid fa-lock field-icon"></i>
+                  <input type="password" id="landing-login-password" placeholder="Enter your password" value="admin123" required>
+                  <button type="button" class="btn-toggle-eye" onclick="togglePasswordVisibility('landing-login-password', this)" title="Show/Hide Password">
+                    <i class="fa-regular fa-eye"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="form-aux-row">
+                <label class="remember-label">
+                  <input type="checkbox" id="login-remember-me" checked>
+                  <span>Remember Me</span>
+                </label>
+                <a href="javascript:void(0)" onclick="openForgotPasswordModal()" class="forgot-link">Forgot Password?</a>
+              </div>
+
+              <!-- Yellow CTA Button -->
+              <button type="submit" class="btn-portal-primary" id="btn-login-submit">
+                <i class="fa-solid fa-arrow-right-to-bracket"></i> Login
+              </button>
+
+              <!-- Dev-Only Demo Section: shown only on localhost by checkDevEnvironment() -->
+              <div id="dev-demo-login-box" style="display:none;">
+                <div class="auth-divider-or">
+                  <span>DEV MODE</span>
+                </div>
+                <div class="demo-login-actions">
+                  <button type="button" class="btn-demo-quick" onclick="quickDemoLogin('admin', this)">
+                    <i class="fa-solid fa-shield-halved text-gold"></i> Demo Yard Admin
+                  </button>
+                  <button type="button" class="btn-demo-quick" onclick="quickDemoLogin('customer', this)">
+                    <i class="fa-solid fa-user-tie text-teal"></i> Demo Customer
+                  </button>
+                </div>
+              </div>
+
+              <div class="auth-footer-prompt">
+                Don't have an account? <a href="javascript:void(0)" onclick="toggleLandingAuth('register')">Sign Up</a>
+              </div>
+            </form>
+
+            <!-- REGISTER FORM (CUSTOMER SIGN UP) -->
+            <form id="landing-form-register" class="portal-auth-form" style="display:none;">
+              <div class="form-grid-2">
+                <div class="form-group-field">
+                  <label>Full Name *</label>
+                  <div class="input-wrap">
+                    <i class="fa-regular fa-user field-icon"></i>
+                    <input type="text" id="landing-reg-name" placeholder="Kamal Perera" required>
+                  </div>
+                </div>
+                <div class="form-group-field">
+                  <label>Email Address *</label>
+                  <div class="input-wrap">
+                    <i class="fa-regular fa-envelope field-icon"></i>
+                    <input type="email" id="landing-reg-email" placeholder="kamal@apex.lk" required>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-grid-2">
+                <div class="form-group-field">
+                  <label>Password *</label>
+                  <div class="input-wrap">
+                    <i class="fa-solid fa-lock field-icon"></i>
+                    <input type="password" id="landing-reg-password" placeholder="••••••••" required>
+                    <button type="button" class="btn-toggle-eye" onclick="togglePasswordVisibility('landing-reg-password', this)">
+                      <i class="fa-regular fa-eye"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="form-group-field">
+                  <label>WhatsApp Phone *</label>
+                  <div class="input-wrap">
+                    <i class="fa-brands fa-whatsapp field-icon"></i>
+                    <input type="tel" id="landing-reg-phone" placeholder="+94 77 123 4567" required>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-grid-2">
+                <div class="form-group-field">
+                  <label>NIC / Passport *</label>
+                  <div class="input-wrap">
+                    <i class="fa-regular fa-id-card field-icon"></i>
+                    <input type="text" id="landing-reg-nic" placeholder="851234567V" required>
+                  </div>
+                </div>
+                <div class="form-group-field">
+                  <label>Company / Firm</label>
+                  <div class="input-wrap">
+                    <i class="fa-solid fa-building field-icon"></i>
+                    <input type="text" id="landing-reg-company" placeholder="Apex Civil Engineering">
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group-field">
+                <label>Job Site / Delivery Address *</label>
+                <div class="input-wrap">
+                  <i class="fa-solid fa-location-dot field-icon"></i>
+                  <input type="text" id="landing-reg-address" placeholder="No 45, Baseline Road, Colombo" required>
+                </div>
+              </div>
+
+              <!-- Yellow CTA Button -->
+              <button type="submit" class="btn-portal-primary mt-2" id="btn-reg-submit">
+                <i class="fa-solid fa-user-plus"></i> Create Account & Start Renting
+              </button>
+
+              <div class="auth-footer-prompt">
+                Already have an account? <a href="javascript:void(0)" onclick="toggleLandingAuth('login')">Login</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Bottom Feature Trust Strip -->
+    <div class="portal-trust-strip">
+      <div class="trust-strip-inner">
+        <div class="trust-item">
+          <div class="trust-icon-box">
+            <i class="fa-solid fa-briefcase"></i>
+          </div>
+          <div class="trust-meta">
+            <strong>1000+ Tools</strong>
+            <span>Wide range of equipment</span>
+          </div>
+        </div>
+
+        <div class="trust-item">
+          <div class="trust-icon-box">
+            <i class="fa-solid fa-users"></i>
+          </div>
+          <div class="trust-meta">
+            <strong>Trusted by Thousands</strong>
+            <span>Happy customers nationwide</span>
+          </div>
+        </div>
+
+        <div class="trust-item">
+          <div class="trust-icon-box">
+            <i class="fa-solid fa-headset"></i>
+          </div>
+          <div class="trust-meta">
+            <strong>24/7 Support</strong>
+            <span>We're here to help you</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Dark Slate Footer -->
+    <footer class="portal-footer-bar">
+      <div class="footer-bar-inner">
+        <span class="footer-copy">© 2026 Lions Engineering & Tool Rent. All rights reserved.</span>
+        <div class="footer-links">
+          <a href="javascript:void(0)">Terms & Conditions</a>
+          <a href="javascript:void(0)">Privacy Policy</a>
+          <a href="javascript:void(0)">Contact Us</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- 2. MAIN APPLICATION DASHBOARDS (AFTER AUTHENTICATION) -->
+  <!-- ============================================================ -->
+  <div id="main-app-container" style="display:none;">
+    <div class="app-layout">
+      <!-- Sidebar Navigation -->
+      <aside class="sidebar">
+        <div class="brand-container">
+          <div class="brand-logo">
+            <i class="fa-solid fa-shield-halved"></i>
+            <i class="fa-solid fa-wrench brand-subicon"></i>
+          </div>
+          <div class="brand-text">
+            <span class="brand-title">LIONS</span>
+            <span class="brand-sub">ENGINEERING</span>
+          </div>
+        </div>
+
+        <!-- Navigation for ADMIN Role -->
+        <nav class="nav-menu" id="admin-nav-menu">
+          <button class="nav-item active" data-tab="dashboard" id="nav-dashboard">
+            <i class="fa-solid fa-chart-pie"></i>
+            <span data-i18n="nav_dashboard">Dashboard Overview</span>
+          </button>
+          <button class="nav-item" data-tab="inventory" id="nav-inventory">
+            <i class="fa-solid fa-toolbox"></i>
+            <span data-i18n="nav_inventory">Equipment Inventory</span>
+            <span class="badge-count" id="badge-total-tools">0</span>
+          </button>
+          <button class="nav-item" data-tab="rentals" id="nav-rentals">
+            <i class="fa-solid fa-file-contract"></i>
+            <span data-i18n="nav_rentals">All Agreements</span>
+            <span class="badge-count badge-warning" id="badge-active-rentals">0</span>
+          </button>
+          <button class="nav-item" data-tab="maintenance" id="nav-maintenance">
+            <i class="fa-solid fa-screwdriver-wrench"></i>
+            <span data-i18n="nav_maintenance">Maintenance & Repairs</span>
+            <span class="badge-count" id="badge-total-maintenance">0</span>
+          </button>
+          <button class="nav-item" data-tab="payments" id="nav-payments">
+            <i class="fa-solid fa-credit-card"></i>
+            <span>Payments & Deposits</span>
+            <span class="badge-count" id="badge-total-payments">0</span>
+          </button>
+          <button class="nav-item" data-tab="users" id="nav-users">
+            <i class="fa-solid fa-users-gear"></i>
+            <span>Users & KYC Directory</span>
+            <span class="badge-count" id="badge-total-users">0</span>
+          </button>
+        </nav>
+
+        <!-- Navigation for CUSTOMER Role -->
+        <nav class="nav-menu" id="customer-nav-menu" style="display:none;">
+          <button class="nav-item active" data-tab="catalog" id="nav-customer-catalog">
+            <i class="fa-solid fa-store"></i>
+            <span>Equipment Storefront</span>
+            <span class="badge-count badge-warning" id="badge-cust-catalog-count">0</span>
+          </button>
+          <button class="nav-item" data-tab="customer-portal" id="nav-customer-portal">
+            <i class="fa-solid fa-box-archive"></i>
+            <span>My Leases & Invoices</span>
+            <span class="badge-count" id="badge-my-leases-count">0</span>
+          </button>
+          <button class="nav-item" data-tab="customer-kyc" id="nav-customer-kyc">
+            <i class="fa-solid fa-id-card"></i>
+            <span>My KYC & Verification</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-quick-actions" id="admin-quick-actions">
+          <p class="quick-title" data-i18n="quick_actions_title">QUICK ACTIONS</p>
+          <button class="btn btn-primary btn-block btn-cta" id="btn-quick-rent" data-tooltip="Issue rental agreement directly to contractor">
+            <i class="fa-solid fa-circle-plus"></i> <span data-i18n="btn_new_agreement">New Agreement</span>
+          </button>
+          <button class="btn btn-secondary btn-block btn-cta" id="btn-quick-add-tool" data-tooltip="Add new tool into database stock">
+            <i class="fa-solid fa-plus"></i> <span data-i18n="btn_add_tool">Add Tool to Stock</span>
+          </button>
+          <button class="btn btn-outline btn-block btn-cta" id="btn-quick-log-maint" data-tooltip="Record repairs and service costs">
+            <i class="fa-solid fa-wrench"></i> <span data-i18n="btn_log_maintenance">Log Service / Repair</span>
+          </button>
+        </div>
+
+        <div class="sidebar-footer">
+          <div class="user-profile">
+            <div class="avatar" id="sidebar-avatar"><i class="fa-solid fa-user-shield"></i></div>
+            <div class="user-info">
+              <span class="user-name" id="sidebar-user-name">Administrator</span>
+              <span class="user-role" id="sidebar-user-role">System Manager</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Content Area -->
+      <main class="main-content">
+        <!-- Top Bar -->
+        <header class="topbar">
+          <div class="page-title-area">
+            <h1 id="page-title" data-i18n="title_dashboard">Dashboard Overview</h1>
+            <p id="page-subtitle" data-i18n="sub_dashboard">Real-time heavy equipment, machinery leases, and rental operations</p>
+          </div>
+
+          <div class="topbar-actions">
+            <!-- Active Rental Counter Pill (Visible for Logged In Customer) -->
+            <button class="header-lease-pill" id="header-active-lease-btn" onclick="switchTab('customer-portal')" style="display:none;" title="View your active jobsite leases">
+              <span class="pulse-dot-green"></span>
+              <span id="header-active-lease-label">⚡ Active Leases (0)</span>
+            </button>
+
+            <!-- Bilingual EN/SI Toggle Switch -->
+            <div class="lang-switch-container" data-tooltip="Switch language between English and Sinhala">
+              <i class="fa-solid fa-globe lang-icon"></i>
+              <button class="lang-btn active" id="lang-en" onclick="setLanguage('en')">EN</button>
+              <span class="lang-divider">|</span>
+              <button class="lang-btn" id="lang-si" onclick="setLanguage('si')">සිංහල</button>
+            </div>
+
+            <!-- Customer Profile Avatar & Menu Dropdown -->
+            <div class="user-menu-dropdown" id="user-menu-dropdown-wrapper">
+              <button class="user-avatar-btn" id="btn-user-avatar-menu" onclick="toggleUserDropdown(event)" title="Account & Navigation Menu">
+                <div class="avatar-circle" id="header-avatar-circle">KP</div>
+                <div class="user-brief-text">
+                  <span class="u-name" id="header-user-name">Kamal Perera</span>
+                  <span class="u-badge" id="header-user-role-badge">Verified Contractor</span>
+                </div>
+                <i class="fa-solid fa-chevron-down u-arrow"></i>
+              </button>
+
+              <div class="dropdown-menu-card" id="user-dropdown-menu">
+                <div class="dropdown-header">
+                  <strong id="dropdown-user-name">Kamal Perera</strong>
+                  <span class="dropdown-sub" id="dropdown-user-company">Apex Civil Engineering Ltd</span>
+                </div>
+                <div class="dropdown-divider"></div>
+                <a href="javascript:void(0)" class="dropdown-item" onclick="switchTab('customer-portal'); closeUserDropdown();">
+                  <i class="fa-solid fa-truck-ramp-box text-gold"></i>
+                  <span>My Active Rentals</span>
+                </a>
+                <a href="javascript:void(0)" class="dropdown-item" onclick="switchTab('customer-portal'); closeUserDropdown();">
+                  <i class="fa-solid fa-file-invoice text-success"></i>
+                  <span>Billing & Invoices</span>
+                </a>
+                <a href="javascript:void(0)" class="dropdown-item" onclick="switchTab('customer-kyc'); closeUserDropdown();">
+                  <i class="fa-solid fa-id-card text-info"></i>
+                  <span>KYC Verification</span>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="javascript:void(0)" class="dropdown-item text-danger font-bold" onclick="logoutUser(); closeUserDropdown();">
+                  <i class="fa-solid fa-right-from-bracket"></i>
+                  <span>Sign Out / Logout</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- Topbar Quick Sign Out Button -->
+            <button class="btn-topbar-signout" onclick="logoutUser()" title="Sign Out of Session">
+              <i class="fa-solid fa-right-from-bracket"></i>
+              <span>Sign Out</span>
+            </button>
+
+            <div class="global-search-wrapper" id="topbar-search-wrapper">
+              <i class="fa-solid fa-magnifying-glass search-icon"></i>
+              <input type="text" id="global-search" placeholder="Search equipment, serials, agreements..." data-i18n-placeholder="search_placeholder">
+            </div>
+          </div>
+        </header>
+
+        <!-- ADMIN TAB 1: DASHBOARD OVERVIEW -->
+        <section class="tab-content active" id="tab-dashboard">
+          <div class="kpi-grid">
+            <div class="kpi-card" style="--accent-color: #eab308;" data-tooltip="Total equipment and tools registered in Lions Engineering stock">
+              <div class="kpi-icon-box"><i class="fa-solid fa-toolbox"></i></div>
+              <div class="kpi-data">
+                <span class="kpi-label" data-i18n="kpi_total_tools">Total Equipment</span>
+                <h2 class="kpi-value" id="kpi-total-tools">0</h2>
+                <span class="kpi-sub" id="kpi-avail-sub"><i class="fa-solid fa-check"></i> 0 available</span>
+              </div>
+            </div>
+
+            <div class="kpi-card" style="--accent-color: #10b981;" data-tooltip="Equipment currently deployed on customer job sites">
+              <div class="kpi-icon-box"><i class="fa-solid fa-truck-ramp-box"></i></div>
+              <div class="kpi-data">
+                <span class="kpi-label" data-i18n="kpi_active_leases">Active Leases</span>
+                <h2 class="kpi-value" id="kpi-active-rentals">0</h2>
+                <span class="kpi-sub text-success"><i class="fa-solid fa-clock"></i> <span data-i18n="kpi_sub_active">Currently on project sites</span></span>
+              </div>
+            </div>
+
+            <div class="kpi-card" style="--accent-color: #ef4444;" data-tooltip="Agreements past their agreed due date requiring return or extension">
+              <div class="kpi-icon-box"><i class="fa-solid fa-triangle-exclamation"></i></div>
+              <div class="kpi-data">
+                <span class="kpi-label" data-i18n="kpi_overdue_returns">Overdue Returns</span>
+                <h2 class="kpi-value" id="kpi-overdue-rentals">0</h2>
+                <span class="kpi-sub text-danger" id="kpi-overdue-sub"><i class="fa-solid fa-bell"></i> <span data-i18n="kpi_sub_overdue">Requires urgent return</span></span>
+              </div>
+            </div>
+
+            <div class="kpi-card" style="--accent-color: #3b82f6;" data-tooltip="Total revenue generated from rental fees, deposits, and services">
+              <div class="kpi-icon-box"><i class="fa-solid fa-coins"></i></div>
+              <div class="kpi-data">
+                <span class="kpi-label" data-i18n="kpi_total_revenue">Total Rental Revenue</span>
+                <h2 class="kpi-value" id="kpi-total-revenue">LKR 0</h2>
+                <span class="kpi-sub text-info"><i class="fa-solid fa-arrow-trend-up"></i> <span data-i18n="kpi_sub_revenue">Live revenue generated</span></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-split">
+            <div class="glass-panel main-panel">
+              <div class="panel-header">
+                <div class="panel-title">
+                  <i class="fa-solid fa-list-check"></i>
+                  <h3 data-i18n="panel_recent_rentals">Active & Recent Rental Agreements</h3>
+                </div>
+                <button class="btn btn-sm btn-outline btn-cta" id="btn-view-all-rentals" data-i18n="btn_view_all">View All</button>
+              </div>
+              <div class="table-responsive">
+                <table class="custom-table" id="table-dashboard-rentals">
+                  <thead>
+                    <tr>
+                      <th data-i18n="th_agreement_code">Agreement Code</th>
+                      <th data-i18n="th_customer">Customer / Client</th>
+                      <th data-i18n="th_tool">Equipment / Tool</th>
+                      <th data-i18n="th_due_date">Due Date</th>
+                      <th data-i18n="th_total">Total (LKR)</th>
+                      <th data-i18n="th_status">Status</th>
+                      <th data-i18n="th_actions">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tbody-dashboard-rentals">
+                    <tr><td colspan="7" class="text-center py-4" data-i18n="loading_records">Loading rental records...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="glass-panel side-panel">
+              <div class="panel-header">
+                <div class="panel-title">
+                  <i class="fa-solid fa-layer-group"></i>
+                  <h3 data-i18n="panel_category_breakdown">Equipment by Category</h3>
+                </div>
+              </div>
+              <div class="category-list" id="dashboard-categories"></div>
+
+              <div class="system-info-box mt-4">
+                <div class="info-row">
+                  <span><i class="fa-solid fa-server"></i> <span data-i18n="info_db">Database</span>:</span>
+                  <strong>MongoDB Atlas Cluster0</strong>
+                </div>
+                <div class="info-row">
+                  <span><i class="fa-solid fa-shield-check"></i> Security Mode:</span>
+                  <span class="text-success">Role-Based JWT Auth Active</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- CUSTOMER TAB 1: STOREFRONT CATALOG (FULL-WIDTH WHITE & YELLOW THEME) -->
+        <section class="tab-content" id="tab-catalog">
+          <!-- Catalog Page Header & Control Bar -->
+          <div class="catalog-page-header">
+            <div class="catalog-header-top">
+              <div class="catalog-title-group">
+                <span class="hero-tag"><i class="fa-solid fa-star text-gold"></i> CERTIFIED EQUIPMENT HIRE</span>
+                <h2 class="catalog-main-title">Product Catalog & Heavy Machinery</h2>
+                <p class="catalog-sub-title">Browse verified engineering tools with Tiered Rates (-30% Monthly), Direct Site Delivery, and instant 1-click booking.</p>
+              </div>
+
+              <!-- Search Bar -->
+              <div class="catalog-search-box">
+                <i class="fa-solid fa-magnifying-glass search-placeholder-icon"></i>
+                <input type="text" id="catalog-tool-search" placeholder="Search equipment, models, serial tags..." oninput="handleCatalogSearch(this.value)">
+                <button class="btn-catalog-search" onclick="handleCatalogSearch(document.getElementById('catalog-tool-search').value)"><i class="fa-solid fa-magnifying-glass"></i></button>
+              </div>
+            </div>
+
+            <!-- Horizontal Category Filter Pills -->
+            <div class="category-pills-bar mt-3" id="catalog-category-pills">
+              <button class="cat-pill-btn active" data-cat="All" onclick="handleCategorySelectChange('All')">
+                <i class="fa-solid fa-layer-group"></i> All Equipment <span class="pill-count" id="cat-count-all">16</span>
+              </button>
+              <button class="cat-pill-btn" data-cat="Power Tools" onclick="handleCategorySelectChange('Power Tools')">
+                <i class="fa-solid fa-bolt text-gold"></i> Power Tools <span class="pill-count" id="cat-count-power">5</span>
+              </button>
+              <button class="cat-pill-btn" data-cat="Hand Tools" onclick="handleCategorySelectChange('Hand Tools')">
+                <i class="fa-solid fa-wrench text-gold"></i> Hand Tools <span class="pill-count" id="cat-count-hand">1</span>
+              </button>
+              <button class="cat-pill-btn" data-cat="Cleaning Equipment" onclick="handleCategorySelectChange('Cleaning Equipment')">
+                <i class="fa-solid fa-spray-can-sparkles text-gold"></i> Cleaning <span class="pill-count" id="cat-count-cleaning">2</span>
+              </button>
+              <button class="cat-pill-btn" data-cat="Heavy Machinery" onclick="handleCategorySelectChange('Heavy Machinery')">
+                <i class="fa-solid fa-truck-monster text-gold"></i> Heavy Machinery <span class="pill-count" id="cat-count-heavy">2</span>
+              </button>
+              <button class="cat-pill-btn" data-cat="Concrete & Masonry" onclick="handleCategorySelectChange('Concrete & Masonry')">
+                <i class="fa-solid fa-cubes text-gold"></i> Concrete <span class="pill-count" id="cat-count-concrete">1</span>
+              </button>
+              <button class="cat-pill-btn" data-cat="Surveying & Measuring" onclick="handleCategorySelectChange('Surveying & Measuring')">
+                <i class="fa-solid fa-crosshairs text-gold"></i> Measuring <span class="pill-count" id="cat-count-surveying">1</span>
+              </button>
+              <button class="cat-pill-btn" data-cat="Access & Scaffolding" onclick="handleCategorySelectChange('Access & Scaffolding')">
+                <i class="fa-solid fa-cubes-stacked text-gold"></i> Ladders & Scaffolds <span class="pill-count" id="cat-count-access">2</span>
+              </button>
+              <button class="cat-pill-btn" data-cat="Generators & Power" onclick="handleCategorySelectChange('Generators & Power')">
+                <i class="fa-solid fa-car-battery text-gold"></i> Generators <span class="pill-count" id="cat-count-gen">1</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Full-Width Storefront Product Grid -->
+          <div class="storefront-product-grid" id="storefront-container">
+            <!-- Dynamically rendered with full-width prominent cards -->
+          </div>
+        </section>
+
+        <!-- CUSTOMER TAB 2: CUSTOMER PORTAL -->
+        <section class="tab-content" id="tab-customer-portal">
+          <!-- Customer Welcome Card -->
+          <div class="catalog-page-header mb-3" style="padding: 20px 24px;">
+            <div class="catalog-header-top" style="align-items: center;">
+              <div>
+                <span class="hero-tag"><i class="fa-solid fa-user-shield text-gold"></i> CONTRACTOR SELF-SERVICE DESK</span>
+                <h2 class="catalog-main-title" id="portal-user-greeting" style="font-size: 20px;">Welcome, Contractor</h2>
+                <p class="catalog-sub-title" style="font-size: 13px; margin-bottom: 0;">Track your active jobsites, download verified tax invoices, manage security deposits, and request rental extensions.</p>
+              </div>
+              <button class="btn btn-gold btn-cta" onclick="switchTab('catalog')">
+                <i class="fa-solid fa-plus-circle"></i> <span>Rent New Tool</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 4 Clean Responsive KPI Cards -->
+          <div class="kpi-grid mb-4">
+            <div class="kpi-card" style="--accent-color: #f59e0b;">
+              <div class="kpi-icon-box" style="background:#fffbeb; color:#d97706;">
+                <i class="fa-solid fa-truck-ramp-box"></i>
+              </div>
+              <div class="kpi-data">
+                <span class="kpi-label">Active Leases</span>
+                <h2 class="kpi-value text-gold" id="portal-active-count">0</h2>
+                <span class="kpi-sub text-gold"><i class="fa-solid fa-bolt"></i> On-Site Machinery</span>
+              </div>
+            </div>
+
+            <div class="kpi-card" style="--accent-color: #10b981;">
+              <div class="kpi-icon-box" style="background:#ecfdf5; color:#059669;">
+                <i class="fa-solid fa-vault"></i>
+              </div>
+              <div class="kpi-data">
+                <span class="kpi-label">Deposits Held (LKR)</span>
+                <h2 class="kpi-value text-success" id="portal-deposit-held">LKR 0</h2>
+                <span class="kpi-sub text-success"><i class="fa-solid fa-lock"></i> Refundable Escrow</span>
+              </div>
+            </div>
+
+            <div class="kpi-card" style="--accent-color: #3b82f6;">
+              <div class="kpi-icon-box" style="background:#eff6ff; color:#2563eb;">
+                <i class="fa-solid fa-file-signature"></i>
+              </div>
+              <div class="kpi-data">
+                <span class="kpi-label">Total Hires</span>
+                <h2 class="kpi-value" id="portal-total-count">0</h2>
+                <span class="kpi-sub text-info"><i class="fa-solid fa-clock-rotate-left"></i> Lifetime Orders</span>
+              </div>
+            </div>
+
+            <div class="kpi-card" style="--accent-color: #0d9488;">
+              <div class="kpi-icon-box" style="background:#f0fdfa; color:#0d9488;">
+                <i class="fa-solid fa-id-card-clip"></i>
+              </div>
+              <div class="kpi-data">
+                <span class="kpi-label">KYC Status</span>
+                <h2 class="kpi-value" style="font-size: 19px; margin-top: 4px;">
+                  <span class="badge badge-active" id="portal-kyc-badge">Verified</span>
+                </h2>
+                <span class="kpi-sub text-muted"><i class="fa-solid fa-shield-check text-success"></i> Account Standing</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Leases & Invoices Table Section -->
+          <div class="glass-panel">
+            <div class="panel-header" style="flex-wrap: wrap; gap: 12px;">
+              <div class="panel-title">
+                <i class="fa-solid fa-file-invoice text-gold"></i>
+                <h3>My Equipment Leases & Invoices</h3>
+              </div>
+
+              <!-- Status Filter Tabs -->
+              <div class="tab-subnav" id="customer-lease-filters">
+                <button type="button" class="subnav-btn active" data-filter="All" onclick="filterCustomerLeases('All', this)">All Leases</button>
+                <button type="button" class="subnav-btn" data-filter="Active" onclick="filterCustomerLeases('Active', this)">Active</button>
+                <button type="button" class="subnav-btn" data-filter="Completed" onclick="filterCustomerLeases('Completed', this)">Completed / Returned</button>
+                <button type="button" class="subnav-btn" data-filter="Overdue" onclick="filterCustomerLeases('Overdue', this)">Overdue</button>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="custom-table" id="table-customer-leases">
+                <thead>
+                  <tr>
+                    <th>Agreement Code</th>
+                    <th>Equipment Description</th>
+                    <th>Rental Timeline</th>
+                    <th>Logistics Mode</th>
+                    <th>Total Paid (LKR)</th>
+                    <th>Deposit Status</th>
+                    <th>Status</th>
+                    <th>Customer Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-customer-leases">
+                  <!-- Dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- CUSTOMER TAB 3: KYC & VERIFICATION STATUS -->
+        <section class="tab-content" id="tab-customer-kyc">
+          <!-- Page Header -->
+          <div class="catalog-page-header mb-4" style="padding: 20px 24px;">
+            <div class="catalog-header-top" style="align-items: center;">
+              <div>
+                <span class="hero-tag"><i class="fa-solid fa-id-card text-gold"></i> COMPLIANCE & IDENTITY VAULT</span>
+                <h2 class="catalog-main-title" style="font-size: 20px;">Customer KYC & Contractor Verification</h2>
+                <p class="catalog-sub-title" style="font-size: 13px; margin-bottom: 0;">Verified accounts enjoy zero dispatch delay, waived deposit requirements for small tools, and access to Tier-3 heavy machinery leases.</p>
+              </div>
+              <span class="badge badge-active" id="kyc-status-chip" style="font-size: 14px; padding: 8px 16px;">Verified Contractor</span>
+            </div>
+          </div>
+
+          <!-- 1. Verification Status Stepper -->
+          <div class="kyc-stepper-card mb-4">
+            <div class="stepper-track">
+              <div class="stepper-step completed" id="step-kyc-1">
+                <div class="step-icon"><i class="fa-solid fa-file-arrow-up"></i></div>
+                <div class="step-meta">
+                  <span class="step-title">1. Application Submitted</span>
+                  <span class="step-sub">NIC & BR Documents</span>
+                </div>
+              </div>
+              <div class="stepper-line completed" id="line-kyc-1"></div>
+              <div class="stepper-step completed" id="step-kyc-2">
+                <div class="step-icon"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
+                <div class="step-meta">
+                  <span class="step-title">2. Under Review</span>
+                  <span class="step-sub">Yard Compliance Check</span>
+                </div>
+              </div>
+              <div class="stepper-line completed" id="line-kyc-2"></div>
+              <div class="stepper-step completed" id="step-kyc-3">
+                <div class="step-icon"><i class="fa-solid fa-circle-check"></i></div>
+                <div class="step-meta">
+                  <span class="step-title">3. Verified Tier-1</span>
+                  <span class="step-sub">Full Lease Access</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Structured 2-Column Details & Documents Vault -->
+          <div class="dashboard-split">
+            <!-- Left: Structured Profile & Contact Information -->
+            <div class="glass-panel main-panel">
+              <div class="panel-header">
+                <div class="panel-title">
+                  <i class="fa-solid fa-user-check text-gold"></i>
+                  <h3>Contractor Business Profile</h3>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline btn-cta" onclick="openUpdateProfileModal()">
+                  <i class="fa-solid fa-user-pen"></i> Update Details
+                </button>
+              </div>
+
+              <div class="kyc-grid-2col">
+                <div class="kyc-field-box">
+                  <span class="kyc-field-lbl"><i class="fa-solid fa-user text-gold"></i> Full Contractor Name</span>
+                  <strong class="kyc-field-val" id="kyc-name">Kamal Perera</strong>
+                </div>
+
+                <div class="kyc-field-box">
+                  <span class="kyc-field-lbl"><i class="fa-solid fa-building text-gold"></i> Registered Company / Firm</span>
+                  <strong class="kyc-field-val" id="kyc-company">Apex Civil Engineering Ltd</strong>
+                </div>
+
+                <div class="kyc-field-box">
+                  <span class="kyc-field-lbl"><i class="fa-solid fa-id-card text-gold"></i> National ID / Passport No.</span>
+                  <strong class="kyc-field-val" id="kyc-nic">851234567V</strong>
+                </div>
+
+                <div class="kyc-field-box">
+                  <span class="kyc-field-lbl"><i class="fa-solid fa-phone text-gold"></i> Primary Phone</span>
+                  <strong class="kyc-field-val" id="kyc-phone">+94 77 123 4567</strong>
+                </div>
+
+                <div class="kyc-field-box">
+                  <span class="kyc-field-lbl"><i class="fa-regular fa-envelope text-gold"></i> Verified Email Address</span>
+                  <strong class="kyc-field-val" id="kyc-email">kamal@apex.lk</strong>
+                </div>
+
+                <div class="kyc-field-box">
+                  <span class="kyc-field-lbl"><i class="fa-solid fa-shield-check text-gold"></i> Account Verification Standing</span>
+                  <strong class="kyc-field-val text-success" id="kyc-standing-lbl"><i class="fa-solid fa-circle-check"></i> Approved &amp; Active</strong>
+                </div>
+
+                <div class="kyc-field-box" style="grid-column: span 2;">
+                  <span class="kyc-field-lbl"><i class="fa-solid fa-location-dot text-gold"></i> Registered Headquarters / Billing Address</span>
+                  <strong class="kyc-field-val" id="kyc-address">No 45, Baseline Road, Colombo 09</strong>
+                </div>
+              </div>
+
+              <div class="alert-box mt-3" style="background:#ecfdf5; border:1px solid #a7f3d0; border-radius:8px; padding:12px 14px; font-size:12.5px; color:#065f46; display:flex; gap:10px; align-items:center;">
+                <i class="fa-solid fa-circle-check" style="font-size:16px;"></i>
+                <span>Your contractor identity is approved. You are eligible for instant jobsite machinery dispatches and Tiered -30% Monthly lease rates.</span>
+              </div>
+            </div>
+
+            <!-- Right: Uploaded Documents Vault & Previews -->
+            <div class="glass-panel side-panel">
+              <div class="panel-header">
+                <div class="panel-title">
+                  <i class="fa-solid fa-file-shield text-gold"></i>
+                  <h3>Attached KYC Documents</h3>
+                </div>
+                <button type="button" class="btn btn-sm btn-gold btn-cta" onclick="openReuploadKycModal()">
+                  <i class="fa-solid fa-arrow-up-from-bracket"></i> Re-upload
+                </button>
+              </div>
+
+              <div class="doc-vault-cards">
+                <!-- Document Card 1: National ID / Passport -->
+                <div class="kyc-doc-card">
+                  <div class="doc-card-thumb">
+                    <i class="fa-solid fa-id-card text-gold"></i>
+                  </div>
+                  <div class="doc-card-info">
+                    <h4>National ID Card (NIC)</h4>
+                    <p class="text-muted" style="font-size:11.5px;">Verified digital government identity on file</p>
+                    <span class="badge badge-active" style="margin-top:4px;"><i class="fa-solid fa-check-double"></i> Verified Scan</span>
+                  </div>
+                  <div class="doc-card-actions">
+                    <button type="button" class="btn btn-xs btn-outline btn-cta" onclick="openDocPreviewModal('nic')">
+                      <i class="fa-solid fa-eye"></i> View
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Document Card 2: Business Registration / Utility Proof -->
+                <div class="kyc-doc-card mt-3">
+                  <div class="doc-card-thumb" style="background:#eff6ff; color:#2563eb;">
+                    <i class="fa-solid fa-file-invoice"></i>
+                  </div>
+                  <div class="doc-card-info">
+                    <h4>Business Registration (BR)</h4>
+                    <p class="text-muted" style="font-size:11.5px;">Corporate entity proof / billing verification</p>
+                    <span class="badge badge-active" style="margin-top:4px;"><i class="fa-solid fa-check-double"></i> Verified Document</span>
+                  </div>
+                  <div class="doc-card-actions">
+                    <button type="button" class="btn btn-xs btn-outline btn-cta" onclick="openDocPreviewModal('br')">
+                      <i class="fa-solid fa-eye"></i> View
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="security-guarantee-box mt-3" style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px; font-size:11.5px; color:#64748b;">
+                <i class="fa-solid fa-lock text-gold"></i> Encrypted under 256-bit AES storage compliant with Sri Lanka Data Protection guidelines.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ADMIN TAB 2: INVENTORY MANAGEMENT -->
+        <section class="tab-content" id="tab-inventory">
+          <div class="inventory-controls">
+            <div class="category-pills" id="inventory-category-pills">
+              <button class="pill active" data-cat="All" data-i18n="cat_all">All Categories</button>
+              <button class="pill" data-cat="Power Tools" data-i18n="cat_power">Power Tools</button>
+              <button class="pill" data-cat="Heavy Machinery" data-i18n="cat_machinery">Heavy Machinery</button>
+              <button class="pill" data-cat="Concrete & Masonry" data-i18n="cat_concrete">Concrete & Masonry</button>
+              <button class="pill" data-cat="Welding & Cutting" data-i18n="cat_welding">Welding & Cutting</button>
+              <button class="pill" data-cat="Surveying & Measuring" data-i18n="cat_surveying">Surveying & Measuring</button>
+              <button class="pill" data-cat="Access & Scaffolding" data-i18n="cat_scaffolding">Access & Scaffolding</button>
+              <button class="pill" data-cat="Generators & Power" data-i18n="cat_generators">Generators & Power</button>
+            </div>
+
+            <div class="inventory-actions">
+              <!-- Grid vs Table View Mode Switcher -->
+              <div class="view-toggle-btns">
+                <button type="button" class="view-btn active" id="btn-inv-view-grid" onclick="setInventoryViewMode('grid')" title="Card Grid View">
+                  <i class="fa-solid fa-grip"></i> Grid
+                </button>
+                <button type="button" class="view-btn" id="btn-inv-view-table" onclick="setInventoryViewMode('table')" title="List / Data Table View">
+                  <i class="fa-solid fa-list"></i> Table
+                </button>
+              </div>
+
+              <!-- Export CSV / Excel Button -->
+              <button type="button" class="btn btn-sm btn-outline btn-cta" onclick="exportInventoryToCSV()" title="Download complete machinery inventory CSV report">
+                <i class="fa-solid fa-file-csv text-success"></i> Export CSV
+              </button>
+
+              <select id="select-status-filter" class="form-select">
+                <option value="All" data-i18n="filter_all_status">All Statuses</option>
+                <option value="Available" data-i18n="status_available">Available for Hire</option>
+                <option value="Rented" data-i18n="status_rented">Currently Rented</option>
+                <option value="Under Maintenance" data-i18n="status_maintenance">Under Maintenance</option>
+                <option value="Damaged" data-i18n="status_damaged">Damaged</option>
+              </select>
+              <button class="btn btn-primary btn-cta" id="btn-add-tool-modal" data-tooltip="Register new equipment into inventory">
+                <i class="fa-solid fa-plus"></i> <span data-i18n="btn_add_new_tool">Add New Tool</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 1. Grid View (Default) -->
+          <div class="tools-grid" id="tools-container">
+            <!-- Dynamically populated -->
+          </div>
+
+          <!-- 2. Table / List View (Toggleable) -->
+          <div class="glass-panel" id="inventory-table-container" style="display:none;">
+            <div class="table-responsive">
+              <table class="custom-table" id="table-inventory">
+                <thead>
+                  <tr>
+                    <th>Equipment</th>
+                    <th>Item Tag</th>
+                    <th>Category</th>
+                    <th>Daily Rate</th>
+                    <th>Weekly Tier (-15%)</th>
+                    <th>Deposit</th>
+                    <th>Meter Usage</th>
+                    <th>Condition</th>
+                    <th>Status</th>
+                    <th>Admin Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-inventory">
+                  <!-- Dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ADMIN TAB 3: ALL RENTAL AGREEMENTS -->
+        <section class="tab-content" id="tab-rentals">
+          <div class="rentals-controls">
+            <div class="tab-subnav" id="rental-status-filters">
+              <button class="subnav-btn active" data-status="All" data-i18n="subnav_all">All Agreements</button>
+              <button class="subnav-btn" data-status="Active" data-i18n="subnav_active">Active Leases</button>
+              <button class="subnav-btn" data-status="Overdue" data-i18n="subnav_overdue">Overdue Returns</button>
+              <button class="subnav-btn" data-status="Completed" data-i18n="subnav_completed">Completed</button>
+            </div>
+            <button class="btn btn-gold btn-cta" id="btn-new-rental-modal" data-tooltip="Create a new rental agreement">
+              <i class="fa-solid fa-plus-circle"></i> <span data-i18n="btn_create_agreement">Create Agreement</span>
+            </button>
+          </div>
+
+          <div class="glass-panel">
+            <div class="table-responsive">
+              <table class="custom-table" id="table-all-rentals">
+                <thead>
+                  <tr>
+                    <th data-i18n="th_agreement_code">Agreement Code</th>
+                    <th data-i18n="th_customer">Customer / Contractor</th>
+                    <th data-i18n="th_contact">Contact / NIC</th>
+                    <th data-i18n="th_tool">Tool & Item Code</th>
+                    <th data-i18n="th_rental_period">Rental Period</th>
+                    <th>Logistics</th>
+                    <th data-i18n="th_deposit">Deposit</th>
+                    <th data-i18n="th_rent_charge">Rent Charge</th>
+                    <th data-i18n="th_total">Total Amount</th>
+                    <th data-i18n="th_status">Status</th>
+                    <th data-i18n="th_actions">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-all-rentals">
+                  <!-- Dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ADMIN TAB 4: MAINTENANCE & REPAIRS -->
+        <section class="tab-content" id="tab-maintenance">
+          <div class="rentals-controls">
+            <div class="panel-title">
+              <i class="fa-solid fa-screwdriver-wrench text-gold"></i>
+              <h3 data-i18n="title_maintenance">Tool Maintenance & Workshop Service Logs</h3>
+            </div>
+            <button class="btn btn-primary btn-cta" id="btn-add-maintenance-modal" data-tooltip="Record a repair, service or part replacement">
+              <i class="fa-solid fa-wrench"></i> <span data-i18n="btn_log_maintenance">Log Service / Repair</span>
+            </button>
+          </div>
+
+          <div class="glass-panel">
+            <div class="table-responsive">
+              <table class="custom-table" id="table-maintenance">
+                <thead>
+                  <tr>
+                    <th data-i18n="th_service_date">Service Date</th>
+                    <th data-i18n="th_tool">Equipment / Tool</th>
+                    <th data-i18n="th_repair_notes">Repair / Service Description</th>
+                    <th data-i18n="th_technician">Technician</th>
+                    <th data-i18n="th_cost">Repair Cost (LKR)</th>
+                    <th data-i18n="th_status">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-maintenance">
+                  <!-- Dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ADMIN TAB 5: PAYMENTS & DEPOSITS LEDGER -->
+        <section class="tab-content" id="tab-payments">
+          <!-- Deposit Lifecycle Summary KPI Cards -->
+          <div class="kpi-grid mb-3">
+            <div class="kpi-card">
+              <div class="kpi-icon-box" style="background:#ecfdf5; color:#059669;">
+                <i class="fa-solid fa-cash-register"></i>
+              </div>
+              <div class="kpi-content">
+                <span class="kpi-label">Total Revenue Collected</span>
+                <h3 class="kpi-value" id="kpi-pay-total">LKR 0</h3>
+                <span class="kpi-sub"><i class="fa-solid fa-circle-check text-success"></i> Audited Transactions</span>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-icon-box" style="background:#fffbeb; color:#d97706;">
+                <i class="fa-solid fa-vault"></i>
+              </div>
+              <div class="kpi-content">
+                <span class="kpi-label">Security Deposits Held</span>
+                <h3 class="kpi-value text-gold" id="kpi-deposits-held">LKR 0</h3>
+                <span class="kpi-sub"><i class="fa-solid fa-lock text-gold"></i> Active Contractor Escrow</span>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-icon-box" style="background:#eff6ff; color:#2563eb;">
+                <i class="fa-solid fa-hand-holding-dollar"></i>
+              </div>
+              <div class="kpi-content">
+                <span class="kpi-label">Deposits Settled / Refunded</span>
+                <h3 class="kpi-value" id="kpi-deposits-refunded">LKR 0</h3>
+                <span class="kpi-sub"><i class="fa-solid fa-rotate-left text-info"></i> Returned after Inspection</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass-panel">
+            <div class="panel-header">
+              <div class="panel-title">
+                <i class="fa-solid fa-file-invoice-dollar text-gold"></i>
+                <h3>Transaction Ledger & Deposit Settlement Records</h3>
+              </div>
+              <span class="badge badge-active" id="badge-total-payments">0 Records</span>
+            </div>
+            <div class="table-responsive">
+              <table class="custom-table" id="table-payments">
+                <thead>
+                  <tr>
+                    <th>Transaction Reference</th>
+                    <th>Agreement Code</th>
+                    <th>Customer / Payer</th>
+                    <th>Payment Type</th>
+                    <th>Method</th>
+                    <th>Amount (LKR)</th>
+                    <th>Deposit Lifecycle Status</th>
+                    <th>Status</th>
+                    <th>Paid Date</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-payments">
+                  <!-- Dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ADMIN TAB 6: USERS & KYC DIRECTORY -->
+        <section class="tab-content" id="tab-users">
+          <div class="customers-controls">
+            <div class="search-box-large">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="user-search-input" placeholder="Search by contractor name, email, NIC, company..." oninput="handleUserSearch(this.value)">
+            </div>
+          </div>
+
+          <div class="glass-panel">
+            <div class="table-responsive">
+              <table class="custom-table" id="table-users">
+                <thead>
+                  <tr>
+                    <th>Contractor Name</th>
+                    <th>Role</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>NIC / Passport</th>
+                    <th>Company</th>
+                    <th>KYC Document</th>
+                    <th>KYC Status</th>
+                    <th>Verification Action</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-users">
+                  <!-- Dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- MODALS -->
+  <!-- ============================================================ -->
+
+  <!-- MODAL 1: CREATE RENTAL AGREEMENT WIZARD (CUSTOMER / CONTRACTOR BOOKING) -->
+  <div class="modal-overlay" id="modal-rental">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fa-solid fa-file-contract text-gold"></i>
+          <h3 data-i18n="modal_agreement_title">Issue Tool Rental Agreement</h3>
+        </div>
+        <button class="modal-close" data-close="modal-rental">&times;</button>
+      </div>
+
+      <div class="wizard-steps">
+        <div class="wizard-step active" id="rent-step-ind-1">
+          <span class="step-num">1</span>
+          <span class="step-label" data-i18n="step_select">Dates & Tool</span>
+        </div>
+        <div class="wizard-step" id="rent-step-ind-2">
+          <span class="step-num">2</span>
+          <span class="step-label">Logistics & KYC</span>
+        </div>
+        <div class="wizard-step" id="rent-step-ind-3">
+          <span class="step-num">3</span>
+          <span class="step-label">Payment & E-Sign</span>
+        </div>
+      </div>
+
+      <form id="form-rental">
+        <div class="modal-body">
+          <!-- PANE 1: Dates & Equipment -->
+          <div class="wizard-pane active" id="rent-pane-1">
+            <div class="form-group" id="rental-customer-select-group">
+              <label><i class="fa-solid fa-user"></i> <span data-i18n="lbl_select_customer">Select Customer / Contractor *</span></label>
+              <select id="rental-customer-select" class="form-control">
+                <option value="">-- Choose Customer --</option>
+              </select>
+            </div>
+
+            <!-- Selected Tool Dynamic Preview Box -->
+            <div class="selected-tool-summary-card" id="rent-selected-tool-card" style="display:none;">
+              <img id="rent-selected-tool-img" src="" alt="Selected Tool">
+              <div class="tool-summary-info">
+                <span class="tool-summary-cat" id="rent-selected-tool-cat">Power Tools</span>
+                <h4 id="rent-selected-tool-name">Bosch SDS-Max Demolition Hammer</h4>
+                <div class="tool-summary-pricing">
+                  <span class="pricing-pill" id="rent-selected-daily-pill">LKR 2,200 / day</span>
+                  <span class="pricing-pill text-gold" id="rent-selected-weekly-pill">LKR 12,000 / wk (-15%)</span>
+                  <span class="pricing-pill text-info" id="rent-selected-deposit-pill">Deposit: LKR 10,000</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label><i class="fa-solid fa-wrench"></i> <span data-i18n="lbl_select_tool">Select Available Equipment / Tool *</span></label>
+              <select id="rental-tool-select" class="form-control" required>
+                <option value="">-- Choose Available Tool --</option>
+              </select>
+            </div>
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label><i class="fa-solid fa-calendar-plus"></i> <span data-i18n="lbl_start_date">Rental Start Date *</span></label>
+                <input type="date" id="rental-start-date" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label><i class="fa-solid fa-calendar-check"></i> <span data-i18n="lbl_due_date">Due / Expected Return Date *</span></label>
+                <input type="date" id="rental-due-date" class="form-control" required>
+              </div>
+            </div>
+            <div id="availability-feedback" style="display:none; font-size:12px; padding:8px 12px; border-radius:6px; margin-top:4px;"></div>
+          </div>
+
+          <!-- PANE 2: Logistics & Drag-and-Drop KYC Upload (Clean Customer Flow) -->
+          <div class="wizard-pane" id="rent-pane-2">
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label><i class="fa-solid fa-truck text-gold"></i> Logistics & Delivery Mode *</label>
+                <select id="rental-delivery-mode" class="form-control">
+                  <option value="Store Pickup">Self-Pickup (Depot Collection - Free)</option>
+                  <option value="Site Delivery">Site Delivery (+ LKR 3,500 Transport Charge)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label><i class="fa-solid fa-location-dot text-gold"></i> Job Site / Delivery Address *</label>
+                <input type="text" id="rental-site-location" class="form-control" placeholder="e.g. Colombo Port City Site #4" required>
+              </div>
+            </div>
+
+            <!-- KYC Document File / Image Uploader (Drag & Drop + Browse) -->
+            <div class="form-group mt-2">
+              <label><i class="fa-solid fa-id-card text-gold"></i> Upload Contractor KYC Document (NIC / Driving License / Passport) *</label>
+              <div class="dropzone-box" id="kyc-dropzone" onclick="document.getElementById('kyc-file-input').click()">
+                <input type="file" id="kyc-file-input" accept="image/*,.pdf" style="display:none;" onchange="handleKycFileUpload(event)">
+                <i class="fa-solid fa-cloud-arrow-up dropzone-icon"></i>
+                <span class="dropzone-prompt">Drag & Drop NIC / Passport Image or <strong class="text-gold">Browse Files</strong></span>
+                <span class="dropzone-sub">Supports PNG, JPG, JPEG, PDF up to 10MB</span>
+              </div>
+              <div id="kyc-file-preview-wrap" class="file-preview-card" style="display:none;">
+                <img id="kyc-file-preview-img" src="" alt="KYC Preview">
+                <div class="file-preview-meta">
+                  <strong id="kyc-file-preview-name">nic_document.jpg</strong>
+                  <span class="badge badge-active"><i class="fa-solid fa-check"></i> Document Attached</span>
+                </div>
+                <button type="button" class="btn-remove-file" onclick="removeKycFile()"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- PANE 3: Financial Summary, Payment & Digital E-Signature -->
+          <div class="wizard-pane" id="rent-pane-3">
+            <div class="cost-summary-box">
+              <div class="cost-item">
+                <span>Duration & Pricing Tier:</span>
+                <strong id="calc-duration-days">1 Day(s) (Daily Rate)</strong>
+              </div>
+              <div class="cost-item">
+                <span data-i18n="lbl_calc_rent_amount">Base Rent Charges:</span>
+                <strong id="calc-rent-amount">LKR 0</strong>
+              </div>
+              <div class="cost-item">
+                <span>Logistics & Transport:</span>
+                <strong id="calc-delivery-fee">LKR 0</strong>
+              </div>
+              <div class="cost-item">
+                <span data-i18n="lbl_calc_deposit_amount">Required Security Deposit:</span>
+                <strong id="calc-deposit-amount" class="text-gold">LKR 0</strong>
+              </div>
+              <div class="cost-divider"></div>
+              <div class="cost-item total-item">
+                <span data-i18n="lbl_calc_total">Total Payable Amount:</span>
+                <span class="cost-grand-total" id="calc-total-amount">LKR 0</span>
+              </div>
+            </div>
+
+            <div class="payment-method-box mt-3">
+              <label><i class="fa-solid fa-credit-card text-gold"></i> Payment Settlement Method</label>
+              <div class="pay-method-options">
+                <label class="pay-opt-chip active"><input type="radio" name="pay-method" value="Gateway" checked> Online Card Gateway</label>
+                <label class="pay-opt-chip"><input type="radio" name="pay-method" value="Bank Transfer"> Bank Wire</label>
+                <label class="pay-opt-chip"><input type="radio" name="pay-method" value="Cash"> Depot Cash</label>
+              </div>
+            </div>
+
+            <div class="signature-section mt-3">
+              <div class="sig-header">
+                <label><i class="fa-solid fa-signature"></i> Customer Digital Agreement E-Signature *</label>
+                <button type="button" class="btn btn-sm btn-outline" id="btn-clear-sig">Clear Signature</button>
+              </div>
+              <canvas id="signature-pad" class="signature-canvas" width="500" height="110"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-cta" id="btn-rent-prev" style="display:none;" data-i18n="btn_back">Back</button>
+          <button type="button" class="btn btn-primary btn-cta" id="btn-rent-next" data-i18n="btn_next">Next Step &rarr;</button>
+          <button type="submit" class="btn btn-gold btn-cta" id="btn-submit-rental" style="display:none;">
+            <i class="fa-solid fa-credit-card"></i> Pay & Execute Lease
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 1.5: ADMIN / YARD STAFF DISPATCH & METER INSPECTION WORKFLOW -->
+  <div class="modal-overlay" id="modal-dispatch">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fa-solid fa-truck-ramp-box text-gold"></i>
+          <h3>Yard Staff Machinery Dispatch & Meter Logging</h3>
+        </div>
+        <button class="modal-close" data-close="modal-dispatch">&times;</button>
+      </div>
+
+      <form id="form-dispatch">
+        <input type="hidden" id="dispatch-rental-id">
+        <div class="modal-body">
+          <div class="return-agreement-banner">
+            <div class="banner-row">
+              <span class="banner-title" id="dispatch-modal-rental-code">LE-RENT-XXXX</span>
+              <span class="badge badge-active" id="dispatch-modal-customer-name">Customer</span>
+            </div>
+            <p class="banner-sub" id="dispatch-modal-tool-info">Tool details</p>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label><i class="fa-solid fa-gauge-high text-gold"></i> Starting Meter Reading (Engine Hours) *</label>
+              <input type="number" id="dispatch-meter-reading" class="form-control" placeholder="0" min="0" required>
+            </div>
+            <div class="form-group">
+              <label><i class="fa-solid fa-clipboard-check text-gold"></i> Pre-Dispatch Equipment Condition *</label>
+              <select id="dispatch-tool-condition" class="form-control">
+                <option value="Excellent" selected>Excellent (Factory Calibrated)</option>
+                <option value="Good">Good (Field Inspected)</option>
+                <option value="Fair">Fair (Operational)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Pre-Dispatch Condition Photo File Uploader -->
+          <div class="form-group">
+            <label><i class="fa-solid fa-camera text-gold"></i> Pre-Dispatch Equipment Condition Photo</label>
+            <div class="dropzone-box" id="dispatch-dropzone" onclick="document.getElementById('dispatch-photo-input').click()">
+              <input type="file" id="dispatch-photo-input" accept="image/*" style="display:none;" onchange="handleDispatchPhotoUpload(event)">
+              <i class="fa-solid fa-camera-retro dropzone-icon"></i>
+              <span class="dropzone-prompt">Drag & Drop Dispatch Condition Photo or <strong class="text-gold">Browse Image</strong></span>
+              <span class="dropzone-sub">Capture condition of machine, blade, fluids, and accessories</span>
+            </div>
+            <div id="dispatch-photo-preview-wrap" class="file-preview-card" style="display:none;">
+              <img id="dispatch-photo-preview-img" src="" alt="Dispatch Photo Preview">
+              <div class="file-preview-meta">
+                <strong id="dispatch-photo-preview-name">dispatch_inspection.jpg</strong>
+                <span class="badge badge-active"><i class="fa-solid fa-check"></i> Inspection Photo Attached</span>
+              </div>
+              <button type="button" class="btn-remove-file" onclick="removeDispatchPhoto()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label><i class="fa-solid fa-comment-dots text-gold"></i> Yard Officer Dispatch Notes</label>
+            <textarea id="dispatch-notes" class="form-control" rows="2" placeholder="e.g. Fluids checked, safety guards locked, dispatched on transport truck #WP-GA-1234"></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-cta" data-close="modal-dispatch">Cancel</button>
+          <button type="submit" class="btn btn-gold btn-cta">
+            <i class="fa-solid fa-truck-fast"></i> Confirm Yard Dispatch & Log Meter
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 2: RETURN & INSPECTION WORKFLOW -->
+  <div class="modal-overlay" id="modal-return">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fa-solid fa-arrow-rotate-left text-success"></i>
+          <h3 data-i18n="modal_return_title">Tool Return & Inspection Settlement</h3>
+        </div>
+        <button class="modal-close" data-close="modal-return">&times;</button>
+      </div>
+
+      <div class="wizard-steps">
+        <div class="wizard-step active" id="return-step-ind-1">
+          <span class="step-num">1</span>
+          <span class="step-label" data-i18n="step_inspect">Inspection & Meter</span>
+        </div>
+        <div class="wizard-step" id="return-step-ind-2">
+          <span class="step-num">2</span>
+          <span class="step-label" data-i18n="step_settle">Settlement</span>
+        </div>
+      </div>
+
+      <form id="form-return">
+        <input type="hidden" id="return-rental-id">
+        <div class="modal-body">
+          <div class="return-agreement-banner">
+            <div class="banner-row">
+              <span class="banner-title" id="return-modal-rental-code">LE-RENT-XXXX</span>
+              <span class="badge" id="return-modal-customer-name">Customer</span>
+            </div>
+            <p class="banner-sub" id="return-modal-tool-info">Tool details</p>
+          </div>
+
+          <div class="wizard-pane active" id="return-pane-1">
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label><i class="fa-solid fa-calendar-day"></i> <span data-i18n="lbl_actual_return">Actual Return Date</span></label>
+                <input type="date" id="return-actual-date" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label><i class="fa-solid fa-clock"></i> <span data-i18n="lbl_late_penalty">Late Overdue Penalty (LKR)</span></label>
+                <input type="number" id="return-late-fee" class="form-control" value="0" min="0">
+              </div>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label><i class="fa-solid fa-gauge-high"></i> Final Return Meter Reading (Hrs)</label>
+                <input type="number" id="return-final-meter" class="form-control" placeholder="0" min="0">
+              </div>
+              <div class="form-group">
+                <label><i class="fa-solid fa-triangle-exclamation"></i> <span data-i18n="lbl_damage_fee">Damage / Repair Fee (LKR)</span></label>
+                <input type="number" id="return-damage-fee" class="form-control" value="0" min="0">
+              </div>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label><i class="fa-solid fa-clipboard-check"></i> <span data-i18n="lbl_post_condition">Post-Return Tool Condition</span></label>
+                <select id="return-tool-condition" class="form-control">
+                  <option value="Excellent">Excellent</option>
+                  <option value="Good" selected>Good</option>
+                  <option value="Fair">Fair</option>
+                  <option value="Needs Repair">Needs Repair</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label><i class="fa-solid fa-arrows-rotate"></i> <span data-i18n="lbl_reset_status">Reset Tool Status To</span></label>
+                <select id="return-tool-status" class="form-control">
+                  <option value="Available" selected>Available (Ready for next hire)</option>
+                  <option value="Under Maintenance">Under Maintenance</option>
+                  <option value="Damaged">Damaged</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Post-Return Inspection Photo File Uploader -->
+            <div class="form-group">
+              <label><i class="fa-solid fa-camera text-gold"></i> Post-Return Equipment Inspection Photo</label>
+              <div class="dropzone-box" id="return-dropzone" onclick="document.getElementById('return-photo-input').click()">
+                <input type="file" id="return-photo-input" accept="image/*" style="display:none;" onchange="handleReturnPhotoUpload(event)">
+                <i class="fa-solid fa-camera-retro dropzone-icon"></i>
+                <span class="dropzone-prompt">Drag & Drop Return Inspection Photo or <strong class="text-gold">Browse Image</strong></span>
+                <span class="dropzone-sub">Capture machine condition upon return for damage settlement</span>
+              </div>
+              <div id="return-photo-preview-wrap" class="file-preview-card" style="display:none;">
+                <img id="return-photo-preview-img" src="" alt="Return Photo Preview">
+                <div class="file-preview-meta">
+                  <strong id="return-photo-preview-name">return_inspection.jpg</strong>
+                  <span class="badge badge-active"><i class="fa-solid fa-check"></i> Inspection Attached</span>
+                </div>
+                <button type="button" class="btn-remove-file" onclick="removeReturnPhoto()"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label><i class="fa-solid fa-comment-dots"></i> <span data-i18n="lbl_damage_notes">Inspection Remarks / Damage Notes</span></label>
+              <textarea id="return-damage-notes" class="form-control" rows="2" placeholder="Record any physical damages, wear, or inspection remarks..."></textarea>
+            </div>
+          </div>
+
+          <div class="wizard-pane" id="return-pane-2">
+            <div class="settlement-calc-box">
+              <div class="settlement-row">
+                <span data-i18n="lbl_deposit_collected">Security Deposit Collected:</span>
+                <strong id="return-deposit-collected">LKR 0</strong>
+              </div>
+              <div class="settlement-row text-danger">
+                <span>Late Penalties & Damage Deductions:</span>
+                <strong id="return-deductions-total">- LKR 0</strong>
+              </div>
+              <div class="settlement-row text-danger">
+                <span>Excess Meter Usage Charge:</span>
+                <strong id="return-excess-meter-fee">- LKR 0</strong>
+              </div>
+              <div class="settlement-divider"></div>
+              <div class="settlement-row">
+                <span data-i18n="lbl_deposit_status">Deposit Status:</span>
+                <strong class="text-gold" id="return-deposit-status-preview">Held</strong>
+              </div>
+              <div class="settlement-row final-settlement mt-2">
+                <span id="return-settlement-label" data-i18n="lbl_net_refund">Net Deposit Refund to Customer:</span>
+                <span class="settlement-amount text-success" id="return-settlement-amount">LKR 0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-cta" id="btn-return-prev" style="display:none;" data-i18n="btn_back">Back</button>
+          <button type="button" class="btn btn-primary btn-cta" id="btn-return-next" data-i18n="btn_review_settle">Review Settlement &rarr;</button>
+          <button type="submit" class="btn btn-success btn-cta" id="btn-submit-return" style="display:none;" data-i18n="btn_confirm_return">
+            <i class="fa-solid fa-check-double"></i> Complete Return
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 3: LEASE EXTENSION -->
+  <div class="modal-overlay" id="modal-extend">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fa-solid fa-calendar-plus text-gold"></i>
+          <h3 data-i18n="modal_extend_title">Extend Rental Due Date</h3>
+        </div>
+        <button class="modal-close" data-close="modal-extend">&times;</button>
+      </div>
+      <form id="form-extend">
+        <input type="hidden" id="extend-rental-id">
+        <div class="modal-body">
+          <div class="return-agreement-banner">
+            <div class="banner-row">
+              <span class="banner-title" id="extend-modal-rental-code">LE-RENT-XXXX</span>
+              <span class="badge" id="extend-modal-customer-name">Customer</span>
+            </div>
+            <p class="banner-sub" id="extend-modal-tool-info">Tool info</p>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label data-i18n="lbl_current_due">Current Due Date</label>
+              <input type="text" id="extend-current-due" class="form-control" disabled>
+            </div>
+            <div class="form-group">
+              <label data-i18n="lbl_new_due">New Extended Due Date *</label>
+              <input type="date" id="extend-new-due" class="form-control" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label data-i18n="lbl_extend_reason">Extension Reason / Notes</label>
+            <input type="text" id="extend-notes" class="form-control" placeholder="e.g. Project timeline extended by contractor">
+          </div>
+
+          <div class="cost-summary-box">
+            <div class="cost-item">
+              <span data-i18n="lbl_extra_days">Additional Days:</span>
+              <strong id="extend-extra-days">0 Day(s)</strong>
+            </div>
+            <div class="cost-item">
+              <span data-i18n="lbl_extra_rent">Additional Rent Fee:</span>
+              <strong class="text-gold" id="extend-extra-rent">LKR 0</strong>
+            </div>
+            <div class="cost-divider"></div>
+            <div class="cost-item total-item">
+              <span data-i18n="lbl_new_total">New Total Rental Amount:</span>
+              <span class="cost-grand-total" id="extend-new-total">LKR 0</span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-cta" data-close="modal-extend" data-i18n="btn_cancel">Cancel</button>
+          <button type="submit" class="btn btn-gold btn-cta" data-i18n="btn_confirm_extend">
+            <i class="fa-solid fa-check"></i> Confirm Extension
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 4: WHATSAPP / SMS ALERT TRIGGER -->
+  <div class="modal-overlay" id="modal-notify">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fa-brands fa-whatsapp text-success" style="font-size:22px;"></i>
+          <h3>Dispatch WhatsApp & SMS Alert</h3>
+        </div>
+        <button class="modal-close" data-close="modal-notify">&times;</button>
+      </div>
+      <form id="form-notify">
+        <input type="hidden" id="notify-rental-id">
+        <div class="modal-body">
+          <div class="return-agreement-banner">
+            <div class="banner-row">
+              <span class="banner-title" id="notify-rental-code">LE-RENT-XXXX</span>
+              <span class="badge badge-active" id="notify-recipient">Recipient</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Select Notification Template</label>
+            <select id="notify-event-type" class="form-control">
+              <option value="Return Reminder">⏰ 24-Hour Return Reminder</option>
+              <option value="Overdue Alert">⚠️ Overdue Urgent Return Alert</option>
+              <option value="Booking Confirmed">✅ Booking & Dispatch Confirmation</option>
+              <option value="Custom">✏️ Custom Direct Message</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Message Content Preview / Custom Text</label>
+            <textarea id="notify-custom-msg" class="form-control" rows="4"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-cta" data-close="modal-notify">Cancel</button>
+          <button type="submit" class="btn btn-success btn-cta">
+            <i class="fa-brands fa-whatsapp"></i> Send Instant Alert
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 5: LOG MAINTENANCE -->
+  <div class="modal-overlay" id="modal-maintenance">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fa-solid fa-wrench text-gold"></i>
+          <h3 data-i18n="modal_log_maint_title">Log Tool Repair & Service</h3>
+        </div>
+        <button class="modal-close" data-close="modal-maintenance">&times;</button>
+      </div>
+      <form id="form-maintenance">
+        <div class="modal-body">
+          <div class="form-group">
+            <label data-i18n="lbl_maint_tool">Select Tool / Equipment *</label>
+            <select id="maint-tool-select" class="form-control" required>
+              <option value="">-- Choose Tool to Service --</option>
+            </select>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label data-i18n="lbl_service_date">Service Date *</label>
+              <input type="date" id="maint-service-date" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label data-i18n="lbl_repair_cost">Repair / Service Cost (LKR) *</label>
+              <input type="number" id="maint-cost" class="form-control" placeholder="4500" min="0" required>
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label data-i18n="lbl_technician">Technician / Workshop Officer</label>
+              <input type="text" id="maint-technician" class="form-control" placeholder="Lions Workshop Tech" value="Lions Workshop Tech">
+            </div>
+            <div class="form-group">
+              <label data-i18n="lbl_maint_status">Repair Status</label>
+              <select id="maint-status" class="form-control">
+                <option value="Completed">Completed (Ready)</option>
+                <option value="In Progress">In Progress (Under Maintenance)</option>
+                <option value="Scheduled">Scheduled</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label data-i18n="lbl_repair_description">Repair / Maintenance Description *</label>
+            <textarea id="maint-notes" class="form-control" rows="3" placeholder="Describe parts replaced, oil changes, engine tuning or repairs..." required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-cta" data-close="modal-maintenance" data-i18n="btn_cancel">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-cta" data-i18n="btn_save_maint">
+            <i class="fa-solid fa-save"></i> Save Maintenance Log
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 6: ADD / EDIT TOOL -->
+  <div class="modal-overlay" id="modal-tool">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fa-solid fa-toolbox text-gold"></i>
+          <h3 id="modal-tool-title" data-i18n="modal_add_tool_title">Add New Tool to Inventory</h3>
+        </div>
+        <button class="modal-close" data-close="modal-tool">&times;</button>
+      </div>
+      <form id="form-tool">
+        <input type="hidden" id="tool-edit-id">
+        <div class="modal-body">
+          <div class="form-group">
+            <label data-i18n="lbl_tool_name">Tool / Equipment Name *</label>
+            <input type="text" id="tool-name" class="form-control" placeholder="e.g. Inverter TIG/ARC Welding Machine 250A" required>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label data-i18n="lbl_tool_cat">Category *</label>
+              <select id="tool-category" class="form-control" required>
+                <option value="Power Tools">Power Tools</option>
+                <option value="Generators & Power">Generators & Power</option>
+                <option value="Surveying & Measuring">Surveying & Measuring</option>
+                <option value="Heavy Machinery">Heavy Machinery</option>
+                <option value="Welding & Cutting">Welding & Cutting</option>
+                <option value="Concrete & Masonry">Concrete & Masonry</option>
+                <option value="Access & Scaffolding">Access & Scaffolding</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label data-i18n="lbl_serial_tag">Serial Number / Item Code *</label>
+              <input type="text" id="tool-serial" class="form-control" placeholder="e.g. LE-WLD-003" required>
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label>Daily Hire Rate (LKR) *</label>
+              <input type="number" id="tool-daily-rate" class="form-control" placeholder="2800" min="0" required>
+            </div>
+            <div class="form-group">
+              <label>Weekly Hire Rate (LKR)</label>
+              <input type="number" id="tool-weekly-rate" class="form-control" placeholder="15500" min="0">
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label>Monthly Hire Rate (LKR)</label>
+              <input type="number" id="tool-monthly-rate" class="form-control" placeholder="58000" min="0">
+            </div>
+            <div class="form-group">
+              <label data-i18n="lbl_deposit_req">Security Deposit (LKR) *</label>
+              <input type="number" id="tool-deposit" class="form-control" placeholder="12000" min="0" required>
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label><i class="fa-solid fa-gauge"></i> Daily Meter Limit (Hrs - 0 for unlimited)</label>
+              <input type="number" id="tool-meter-limit" class="form-control" placeholder="8" min="0" value="0">
+            </div>
+            <div class="form-group">
+              <label>Current Cumulative Meter Reading (Hrs)</label>
+              <input type="number" id="tool-meter-reading" class="form-control" placeholder="0" min="0" value="0">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label><i class="fa-solid fa-image"></i> <span data-i18n="lbl_image_url">Equipment Image URL</span></label>
+            <input type="url" id="tool-image-url" class="form-control" placeholder="https://images.unsplash.com/photo-...">
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label data-i18n="lbl_curr_status">Current Status</label>
+              <select id="tool-status" class="form-control">
+                <option value="Available">Available</option>
+                <option value="Rented">Rented</option>
+                <option value="Under Maintenance">Under Maintenance</option>
+                <option value="Damaged">Damaged</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label data-i18n="lbl_condition">Condition</label>
+              <select id="tool-condition" class="form-control">
+                <option value="Excellent">Excellent</option>
+                <option value="Good" selected>Good</option>
+                <option value="Fair">Fair</option>
+                <option value="Needs Repair">Needs Repair</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-cta" data-close="modal-tool" data-i18n="btn_cancel">Cancel</button>
+          <button type="submit" class="btn btn-gold btn-cta" data-i18n="btn_save_tool">
+            <i class="fa-solid fa-save"></i> Save Tool
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: KYC IDENTITY & BUSINESS DOCUMENT PREVIEW -->
+  <div class="modal-overlay" id="modal-kyc-preview">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fa-solid fa-id-card-clip text-gold"></i>
+          <h3>Contractor Verification & KYC Document Review</h3>
+        </div>
+        <button class="modal-close" data-close="modal-kyc-preview">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="kyc-preview-grid">
+          <!-- Left: Contractor Details -->
+          <div class="kyc-contractor-details">
+            <h4 class="text-gold mb-2"><i class="fa-solid fa-user-check"></i> Contractor Profile</h4>
+            <div class="kyc-info-row">
+              <span class="text-muted">Full Name:</span>
+              <strong id="kyc-preview-name">-</strong>
+            </div>
+            <div class="kyc-info-row">
+              <span class="text-muted">Role / Type:</span>
+              <span class="badge badge-active" id="kyc-preview-role">Customer</span>
+            </div>
+            <div class="kyc-info-row">
+              <span class="text-muted">National ID / Passport:</span>
+              <strong class="text-gold" id="kyc-preview-nic">-</strong>
+            </div>
+            <div class="kyc-info-row">
+              <span class="text-muted">Phone Number:</span>
+              <strong id="kyc-preview-phone">-</strong>
+            </div>
+            <div class="kyc-info-row">
+              <span class="text-muted">Email Address:</span>
+              <strong id="kyc-preview-email">-</strong>
+            </div>
+            <div class="kyc-info-row">
+              <span class="text-muted">Registered Company:</span>
+              <strong id="kyc-preview-company">-</strong>
+            </div>
+            <div class="kyc-info-row">
+              <span class="text-muted">Business / Site Address:</span>
+              <span id="kyc-preview-address">-</span>
+            </div>
+            <div class="kyc-info-row mt-2">
+              <span class="text-muted">Current KYC Status:</span>
+              <span class="badge" id="kyc-preview-status-badge">Pending</span>
+            </div>
+          </div>
+
+          <!-- Right: Document Preview Canvas/Frame -->
+          <div class="kyc-document-frame">
+            <div class="kyc-doc-header">
+              <span class="font-bold text-slate"><i class="fa-solid fa-file-shield text-gold"></i> Uploaded NIC / Passport / BR</span>
+              <span class="badge badge-completed" id="kyc-preview-doc-type">NIC / DL Card</span>
+            </div>
+            <div class="kyc-doc-img-container">
+              <img id="kyc-preview-img" src="" alt="KYC Document Preview" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22240%22 viewBox=%220 0 400 240%22><rect width=%22400%22 height=%22240%22 rx=%2212%22 fill=%22%23f8fafc%22 stroke=%22%23cbd5e1%22 stroke-width=%222%22/><text x=%2250%25%22 y=%2245%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2216%22 font-weight=%22bold%22 fill=%22%230f172a%22>National Identity Document (NIC)</text><text x=%2250%25%22 y=%2260%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2213%22 fill=%22%2364748b%22>Verified Digital Scan on File</text></svg>'">
+            </div>
+            <p class="text-muted text-center" style="font-size:11.5px; margin-top:8px;">
+              <i class="fa-solid fa-circle-info text-gold"></i> Verified against Sri Lanka Department for Registration of Persons / BR Registry.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-cta" data-close="modal-kyc-preview">Close</button>
+        <button type="button" class="btn btn-success btn-cta" id="btn-approve-kyc-modal" onclick="executeKycApprovalFromModal()">
+          <i class="fa-solid fa-circle-check"></i> Approve Contractor KYC
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: FORGOT PASSWORD / PASSWORD RECOVERY -->
+  <div class="modal-overlay" id="modal-forgot-password">
+    <div class="modal-card" style="max-width: 520px;">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fa-solid fa-key text-gold"></i>
+          <h3 id="lbl-forgot-title">Reset Your Password</h3>
+        </div>
+        <button class="modal-close" data-close="modal-forgot-password">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- STEP 1: Identity & Email Verification -->
+        <form id="form-forgot-step-1">
+          <div class="alert-box-info mb-3" style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:12px 14px; font-size:12.5px; color:#1e40af; display:flex; gap:10px; align-items:flex-start;">
+            <i class="fa-solid fa-shield-halved" style="font-size:16px; margin-top:2px;"></i>
+            <div>
+              <strong>Secure Account Recovery</strong><br>
+              Enter your registered email and National ID / Passport number to generate a password reset verification code.
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label><i class="fa-regular fa-envelope"></i> Registered Email Address *</label>
+            <input type="email" id="forgot-input-email" class="form-control" placeholder="e.g. admin@lions.lk or contractor@apex.lk" required>
+          </div>
+
+          <div class="form-group">
+            <label><i class="fa-solid fa-id-card"></i> NIC / Passport Number (Optional Verification)</label>
+            <input type="text" id="forgot-input-nic" class="form-control" placeholder="e.g. 800010001V or 851234567V">
+          </div>
+
+          <div class="modal-footer" style="padding: 12px 0 0 0; border: none;">
+            <button type="button" class="btn btn-secondary btn-cta" data-close="modal-forgot-password">Cancel</button>
+            <button type="submit" class="btn btn-gold btn-cta" id="btn-forgot-verify">
+              <i class="fa-solid fa-shield-check"></i> Verify Identity &amp; Send OTP
+            </button>
+          </div>
+        </form>
+
+        <!-- STEP 2: Enter OTP & Set New Password -->
+        <form id="form-forgot-step-2" style="display: none;">
+          <div class="alert-box-info mb-3" id="forgot-otp-banner" style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:12px 14px; font-size:12.5px; color:#166534; display:flex; gap:10px; align-items:flex-start;">
+            <i class="fa-solid fa-circle-check" style="font-size:16px; margin-top:2px;"></i>
+            <div>
+              <strong>Identity Verified!</strong><br>
+              <span id="forgot-otp-hint-text">Your one-time verification code has been dispatched. Enter your new password below.</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label><i class="fa-solid fa-hashtag"></i> One-Time Verification Code (OTP) *</label>
+            <input type="text" id="forgot-input-otp" class="form-control" placeholder="e.g. 123456" required>
+          </div>
+
+          <div class="form-group">
+            <label><i class="fa-solid fa-lock"></i> New Password *</label>
+            <div class="input-wrap" style="position:relative;">
+              <input type="password" id="forgot-new-password" class="form-control" placeholder="Minimum 6 characters" minlength="6" required>
+              <button type="button" class="btn-toggle-eye" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; color:#94a3b8; cursor:pointer;" onclick="togglePasswordVisibility('forgot-new-password', this)">
+                <i class="fa-regular fa-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label><i class="fa-solid fa-lock"></i> Confirm New Password *</label>
+            <div class="input-wrap" style="position:relative;">
+              <input type="password" id="forgot-confirm-password" class="form-control" placeholder="Re-enter new password" minlength="6" required>
+              <button type="button" class="btn-toggle-eye" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; color:#94a3b8; cursor:pointer;" onclick="togglePasswordVisibility('forgot-confirm-password', this)">
+                <i class="fa-regular fa-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="modal-footer" style="padding: 12px 0 0 0; border: none;">
+            <button type="button" class="btn btn-secondary btn-cta" onclick="resetForgotPasswordStep()">Back</button>
+            <button type="submit" class="btn btn-gold btn-cta" id="btn-forgot-reset-submit">
+              <i class="fa-solid fa-lock-open"></i> Reset &amp; Update Password
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: REPORT BREAKDOWN / ONSITE SUPPORT -->
+  <div class="modal-overlay" id="modal-report-breakdown">
+    <div class="modal-card" style="max-width: 540px;">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fa-solid fa-triangle-exclamation text-danger"></i>
+          <h3>Report Equipment Issue / Breakdown</h3>
+        </div>
+        <button class="modal-close" data-close="modal-report-breakdown">&times;</button>
+      </div>
+
+      <form id="form-report-breakdown">
+        <div class="modal-body">
+          <input type="hidden" id="report-rental-id" value="">
+
+          <div class="alert-box-info mb-3" style="background:#fef2f2; border:1px solid #fecaca; border-radius:8px; padding:12px 14px; font-size:12.5px; color:#991b1b; display:flex; gap:10px; align-items:flex-start;">
+            <i class="fa-solid fa-wrench" style="font-size:16px; margin-top:2px;"></i>
+            <div>
+              <strong>Field Support & Rapid Workshop Service</strong><br>
+              Our mechanical response team will be notified immediately via priority WhatsApp alert for jobsite dispatch.
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Equipment Under Lease</label>
+            <input type="text" id="report-tool-info" class="form-control" value="Heavy Machinery" readonly style="background:#f8fafc; font-weight:700;">
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label>Issue Classification *</label>
+              <select id="report-issue-type" class="form-control" required>
+                <option value="Engine / Motor Failure">Engine / Motor Failure</option>
+                <option value="Hydraulic / Pressure Loss">Hydraulic / Pressure Loss</option>
+                <option value="Electrical / Battery Issue">Electrical / Battery Issue</option>
+                <option value="Cutting / Blade Wear">Cutting / Blade Wear</option>
+                <option value="Operational Support Needed">Operational Support Needed</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Jobsite Contact Phone *</label>
+              <input type="text" id="report-contact-phone" class="form-control" placeholder="+94 77 123 4567" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Exact Jobsite Address / Location *</label>
+            <input type="text" id="report-site-location" class="form-control" placeholder="e.g. Site B, Colombo Port City Project" required>
+          </div>
+
+          <div class="form-group">
+            <label>Detailed Malfunction Description *</label>
+            <textarea id="report-issue-desc" class="form-control" rows="3" placeholder="Describe symptoms, noise, error codes or failure behavior..." required></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-cta" data-close="modal-report-breakdown">Cancel</button>
+          <button type="submit" class="btn btn-gold btn-cta" id="btn-submit-breakdown">
+            <i class="fa-solid fa-paper-plane"></i> Submit Breakdown Alert
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: UPDATE CONTRACTOR PROFILE DETAILS -->
+  <div class="modal-overlay" id="modal-update-profile">
+    <div class="modal-card" style="max-width: 520px;">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fa-solid fa-user-pen text-gold"></i>
+          <h3>Update Contractor Profile</h3>
+        </div>
+        <button class="modal-close" data-close="modal-update-profile">&times;</button>
+      </div>
+
+      <form id="form-update-profile">
+        <div class="modal-body">
+          <div class="form-group">
+            <label><i class="fa-solid fa-user"></i> Full Contractor Name *</label>
+            <input type="text" id="prof-input-name" class="form-control" required>
+          </div>
+
+          <div class="form-group">
+            <label><i class="fa-solid fa-building"></i> Registered Company / Business Name</label>
+            <input type="text" id="prof-input-company" class="form-control" placeholder="e.g. Apex Engineering Ltd">
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label><i class="fa-solid fa-phone"></i> Primary Phone Number *</label>
+              <input type="text" id="prof-input-phone" class="form-control" placeholder="+94 77 123 4567" required>
+            </div>
+            <div class="form-group">
+              <label><i class="fa-solid fa-id-card"></i> National ID (Read-only)</label>
+              <input type="text" id="prof-input-nic" class="form-control" readonly style="background:#f8fafc; color:#64748b; font-weight:700;">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label><i class="fa-solid fa-location-dot"></i> Headquarters / Site Address *</label>
+            <textarea id="prof-input-address" class="form-control" rows="2" placeholder="Street, City, Postal Code" required></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-cta" data-close="modal-update-profile">Cancel</button>
+          <button type="submit" class="btn btn-gold btn-cta" id="btn-save-profile">
+            <i class="fa-solid fa-floppy-disk"></i> Save Profile Details
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: RE-UPLOAD KYC COMPLIANCE DOCUMENTS -->
+  <div class="modal-overlay" id="modal-reupload-kyc">
+    <div class="modal-card" style="max-width: 520px;">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fa-solid fa-arrow-up-from-bracket text-gold"></i>
+          <h3>Re-upload KYC Verification Documents</h3>
+        </div>
+        <button class="modal-close" data-close="modal-reupload-kyc">&times;</button>
+      </div>
+
+      <form id="form-reupload-kyc">
+        <div class="modal-body">
+          <div class="alert-box-info mb-3" style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:12px 14px; font-size:12.5px; color:#1e40af; display:flex; gap:10px; align-items:flex-start;">
+            <i class="fa-solid fa-shield-halved" style="font-size:16px; margin-top:2px;"></i>
+            <div>
+              <strong>Compliance Document Vault</strong><br>
+              Upload clear photo scans of your National ID (Front/Back) or Business Registration (BR) certificate.
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Document Category *</label>
+            <select id="reupload-doc-type" class="form-control" required>
+              <option value="National Identity Card (NIC)">National Identity Card (NIC - Front &amp; Back)</option>
+              <option value="Driving License / Passport">Driving License / Passport</option>
+              <option value="Business Registration Certificate (BR)">Business Registration Certificate (BR Form 1)</option>
+              <option value="Proof of Billing / Jobsite Address">Proof of Billing / Jobsite Address</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Select Document File (JPG, PNG, PDF) *</label>
+            <div class="file-upload-dropzone" style="border: 2px dashed #cbd5e1; border-radius: 8px; padding: 20px; text-align: center; background: #f8fafc; cursor: pointer;" onclick="document.getElementById('reupload-file-input').click()">
+              <i class="fa-solid fa-cloud-arrow-up text-gold" style="font-size: 28px; margin-bottom: 8px;"></i>
+              <div style="font-size: 13px; font-weight: 700; color: #0f172a;" id="reupload-file-label">Click to browse or drag &amp; drop document</div>
+              <div style="font-size: 11.5px; color: #64748b; margin-top: 4px;">Max file size: 10MB (Clear scan required)</div>
+            </div>
+            <input type="file" id="reupload-file-input" style="display:none;" accept="image/*,.pdf" onchange="handleKycFileSelect(this)">
+          </div>
+
+          <div class="form-group">
+            <label>Additional Notes for Compliance Officer</label>
+            <textarea id="reupload-notes" class="form-control" rows="2" placeholder="e.g. Renewed company address / revised driving license"></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-cta" data-close="modal-reupload-kyc">Cancel</button>
+          <button type="submit" class="btn btn-gold btn-cta" id="btn-submit-reupload">
+            <i class="fa-solid fa-upload"></i> Upload &amp; Request Review
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: DIGITAL DOCUMENT PREVIEW VIEWER -->
+  <div class="modal-overlay" id="modal-doc-viewer">
+    <div class="modal-card modal-lg" style="max-width: 680px;">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fa-solid fa-file-shield text-gold"></i>
+          <h3 id="doc-viewer-title">Digital KYC Document Inspection</h3>
+        </div>
+        <button class="modal-close" data-close="modal-doc-viewer">&times;</button>
+      </div>
+
+      <div class="modal-body" style="text-align:center; padding: 20px;">
+        <div class="doc-display-canvas" style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:16px; min-height: 280px; display:flex; align-items:center; justify-content:center;">
+          <img id="doc-viewer-img" src="" alt="Document Preview" style="max-width:100%; max-height: 380px; border-radius:6px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22260%22 viewBox=%220 0 400 260%22><rect width=%22400%22 height=%22260%22 rx=%2212%22 fill=%22%23f8fafc%22 stroke=%22%23cbd5e1%22 stroke-width=%222%22/><text x=%2250%25%22 y=%2245%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2216%22 font-weight=%22bold%22 fill=%22%230f172a%22>National Identity Card (NIC)</text><text x=%2250%25%22 y=%2258%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2213%22 fill=%22%2364748b%22>Verified Digital Scan on File</text></svg>'">
+        </div>
+        <p class="text-muted mt-2" style="font-size:12px;" id="doc-viewer-desc">
+          <i class="fa-solid fa-lock text-gold"></i> Authenticated digital scan verified by Lions Engineering Compliance Division.
+        </p>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-cta" data-close="modal-doc-viewer">Close Viewer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 7: INTERACTIVE BILINGUAL INVOICE & PRINTABLE BILL (ADMIN & CUSTOMER) -->
+  <div class="modal-overlay" id="modal-invoice">
+    <div class="modal-card modal-lg invoice-modal-wrapper">
+      <div class="modal-header invoice-toolbar no-print">
+        <div class="invoice-toolbar-left">
+          <i class="fa-solid fa-file-invoice text-gold"></i>
+          <h3 id="invoice-modal-title">Rental Agreement & Tax Invoice</h3>
+        </div>
+
+        <div class="invoice-toolbar-right">
+          <!-- Bill Language Switcher -->
+          <div class="bill-lang-toggle">
+            <span class="bill-lang-label"><i class="fa-solid fa-language"></i> Bill Language:</span>
+            <button type="button" class="bill-lang-btn active" id="btn-bill-lang-en" onclick="setInvoiceLanguage('en')">English</button>
+            <button type="button" class="bill-lang-btn" id="btn-bill-lang-si" onclick="setInvoiceLanguage('si')">සිංහල</button>
+          </div>
+
+          <button type="button" class="btn btn-sm btn-gold btn-cta" onclick="printInvoiceDocument()">
+            <i class="fa-solid fa-print"></i> <span id="lbl-btn-print">Print Bill</span>
+          </button>
+          <button type="button" class="btn btn-sm btn-outline btn-cta" id="btn-invoice-pdf-link" onclick="downloadInvoicePdf()">
+            <i class="fa-solid fa-file-pdf"></i> PDF
+          </button>
+          <button class="modal-close" data-close="modal-invoice">&times;</button>
+        </div>
+      </div>
+
+      <div class="modal-body invoice-modal-body" id="invoice-printable-area">
+        <!-- Official Printable Paper Container -->
+        <div class="invoice-sheet" id="invoice-rendered-content">
+          <!-- Dynamically populated via renderInvoice() -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
