@@ -3796,33 +3796,207 @@ body {
     align-items: flex-start;
     gap: 8px;
   }
-  .panel-title h3 {
-    font-size: 15px;
+  /* Modals: Mobile Optimized */
+  .modal-overlay {
+    padding: 12px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    backdrop-filter: blur(6px) !important;
+    -webkit-backdrop-filter: blur(6px) !important;
   }
 
-  /* Modals: bottom sheet feel on mobile */
-  .modal-overlay {
-    padding: 0;
-    align-items: flex-end;
-  }
   .modal-card {
-    border-radius: 16px 16px 0 0 !important;
-    max-height: 93vh;
-    border-bottom: none;
+    width: 100% !important;
+    max-width: 560px !important;
+    max-height: 92vh !important;
+    border-radius: 16px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3) !important;
+    background: #ffffff !important;
+    border: 1px solid var(--border-color) !important;
   }
+
+  .modal-card.modal-lg {
+    max-width: 680px !important;
+  }
+
   .modal-header {
-    padding: 12px 14px;
+    padding: 14px 18px !important;
+    background: #ffffff !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 20 !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    flex-shrink: 0 !important;
   }
+
+  .modal-title h3 {
+    font-size: 16.5px !important;
+    font-weight: 800 !important;
+  }
+
+  .modal-close {
+    width: 36px !important;
+    height: 36px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 24px !important;
+    color: #64748b !important;
+    background: #f1f5f9 !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+  }
+
   .modal-body {
-    padding: 14px 12px;
+    padding: 16px 18px !important;
+    background: #f8fafc !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
   }
+
   .modal-footer {
-    padding: 10px 12px;
-    flex-direction: column;
-    gap: 8px;
+    padding: 12px 18px !important;
+    background: #ffffff !important;
+    border-top: 1px solid var(--border-color) !important;
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 10px !important;
+    position: sticky !important;
+    bottom: 0 !important;
+    z-index: 20 !important;
+    flex-shrink: 0 !important;
   }
+
   .modal-footer .btn {
-    width: 100%;
+    flex: 1 !important;
+    min-height: 46px !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    border-radius: 10px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: auto !important;
+  }
+
+  /* Form inputs touch optimization (16px base font prevents iOS auto-zoom) */
+  .form-control,
+  .form-select,
+  select.form-control,
+  input.form-control,
+  textarea.form-control {
+    font-size: 15px !important;
+    padding: 11px 14px !important;
+    min-height: 46px !important;
+    border-radius: 10px !important;
+    border: 1.5px solid #cbd5e1 !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    display: block !important;
+  }
+
+  .form-control:focus,
+  .form-select:focus,
+  select.form-control:focus,
+  input.form-control:focus,
+  textarea.form-control:focus {
+    border-color: var(--gold-primary) !important;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2) !important;
+    background: #ffffff !important;
+  }
+
+  .form-group {
+    margin-bottom: 14px !important;
+    width: 100% !important;
+  }
+
+  .form-group label {
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    color: #1e293b !important;
+    margin-bottom: 6px !important;
+    display: block !important;
+  }
+
+  .form-grid-2 {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 14px !important;
+    width: 100% !important;
+  }
+
+  /* Toolbars & Action Buttons */
+  .inventory-controls,
+  .rentals-controls,
+  .customers-controls {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+    padding: 14px !important;
+  }
+
+  .inventory-actions {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    width: 100% !important;
+    align-items: center !important;
+  }
+
+  #btn-add-tool-modal,
+  #btn-new-rental-modal,
+  #btn-add-maintenance-modal {
+    width: 100% !important;
+    min-height: 46px !important;
+    font-size: 14px !important;
+    font-weight: 800 !important;
+    border-radius: 10px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  #select-status-filter {
+    flex: 1 1 auto !important;
+    min-width: 140px !important;
+    min-height: 42px !important;
+  }
+
+  /* Tool Card Actions on Mobile */
+  .tool-card-footer {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+    align-items: center !important;
+    width: 100% !important;
+    margin-top: 12px !important;
+  }
+
+  .tool-card-footer .btn {
+    min-height: 38px !important;
+    padding: 7px 12px !important;
+    font-size: 12.5px !important;
+    font-weight: 700 !important;
+    touch-action: manipulation;
+  }
+
+  .tool-card-footer .flex-1 {
+    flex: 1 1 100% !important;
+    min-height: 42px !important;
+    font-size: 13.5px !important;
+    justify-content: center !important;
+    margin-bottom: 2px !important;
   }
 
   /* Horizontal Scroll Category Filter Bars */
