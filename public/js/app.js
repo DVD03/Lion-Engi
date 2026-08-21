@@ -1003,10 +1003,10 @@ document.addEventListener('DOMContentLoaded', () => {
     closeBtn.addEventListener('click', closeMobileSidebar);
   }
 
-  // Close mobile sidebar automatically when any nav item is tapped
+  // Close mobile & tablet sidebar automatically when any nav item is tapped
   document.querySelectorAll('.nav-item').forEach((btn) => {
     btn.addEventListener('click', () => {
-      if (window.innerWidth <= 900) {
+      if (window.innerWidth < 1024) {
         closeMobileSidebar();
       }
     });
