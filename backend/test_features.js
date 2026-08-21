@@ -30,8 +30,19 @@ function request(url, options = {}, data = null) {
 }
 
 async function testAll() {
-  console.log('--- 1. Testing GET /api/tools ---');
-  const toolsRes = await request('http://localhost:5000/api/tools');
+  console.log('--- 1. Testing Login as Admin & GET /api/tools ---');
+  const adminLogin = await request('http://localhost:5000/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+  }, {
+    email: 'admin@lions.lk',
+    password: 'admin123',
+  });
+  const token = adminLogin.data.token;
+
+  const toolsRes = await request('http://localhost:5000/api/tools', {
+    headers: { Authorization: `Bearer ${token}` },
+  });
   const tool = toolsRes.data.data[0];
   console.log(`Tool: ${tool.name}, Daily: ${tool.dailyRate}, Weekly: ${tool.weeklyRate}, Monthly: ${tool.monthlyRate}`);
 
@@ -47,11 +58,16 @@ async function testAll() {
   console.log('Availability result:', availRes.data);
 
   console.log('\n--- 3. Testing WhatsApp / SMS Notification Endpoint ---');
-  const rentalsRes = await request('http://localhost:5000/api/rentals');
+  const rentalsRes = await request('http://localhost:5000/api/rentals', {
+    headers: { Authorization: `Bearer ${token}` },
+  });
   const rental = rentalsRes.data.data[0];
   const notifyRes = await request(`http://localhost:5000/api/rentals/${rental._id}/notify`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
   }, {
     eventType: 'Return Reminder',
   });
@@ -61,3 +77,4 @@ async function testAll() {
 }
 
 testAll();
+
