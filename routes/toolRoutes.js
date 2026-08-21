@@ -11,7 +11,8 @@ router.get('/', protect, requireRole('admin'), async (req, res) => {
     let query = {};
 
     if (category && category !== 'All' && category !== 'undefined') {
-      query.category = { $regex: new RegExp('^' + category.trim() + '$', 'i') };
+      const cleanCat = category.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      query.category = { $regex: new RegExp(cleanCat, 'i') };
     }
 
     if (status && status !== 'All' && status !== 'undefined') {
@@ -35,14 +36,14 @@ router.get('/', protect, requireRole('admin'), async (req, res) => {
 
 // @route   GET /api/tools/available
 // @desc    Get only tools with status === 'Available' for public storefront and rental pickers
-//          Public – no auth required (catalog is visible to all authenticated users incl. customers)
-router.get('/available', protect, async (req, res) => {
+router.get('/available', async (req, res) => {
   try {
     const { category, search } = req.query;
     let query = { status: 'Available' };
 
     if (category && category !== 'All' && category !== 'undefined') {
-      query.category = { $regex: new RegExp('^' + category.trim() + '$', 'i') };
+      const cleanCat = category.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      query.category = { $regex: new RegExp(cleanCat, 'i') };
     }
 
     if (search) {
