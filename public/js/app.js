@@ -586,34 +586,126 @@ function checkDevEnvironment() {
 }
 
 // ----------------------------------------------------
-// 1. DEDICATED LANDING & AUTHENTICATION PORTAL
+// 1. TOOLRENT STOREFRONT & AUTHENTICATION HELPERS
 // ----------------------------------------------------
-function toggleLandingAuth(type) {
+function openAuthModal(mode = 'login') {
+  openModal('modal-auth');
+  switchAuthTab(mode);
+}
+
+function switchAuthTab(tab) {
   const formLogin = document.getElementById('landing-form-login');
   const formReg = document.getElementById('landing-form-register');
-  const titleEl = document.getElementById('auth-title');
-  const subtitle = document.getElementById('auth-subtitle');
-  const topAuthBtn = document.getElementById('btn-top-auth-toggle');
+  const tabLogin = document.getElementById('tab-btn-login');
+  const tabReg = document.getElementById('tab-btn-register');
+  const heading = document.getElementById('modal-auth-heading');
 
-  if (type === 'login') {
-    if (formLogin) formLogin.style.display = 'flex';
+  if (tab === 'login') {
+    if (formLogin) formLogin.style.display = 'block';
     if (formReg) formReg.style.display = 'none';
-    if (titleEl) titleEl.innerHTML = '<span>Welcome Back!</span>';
-    if (subtitle) subtitle.textContent = 'Login to access your account';
-    if (topAuthBtn) {
-      topAuthBtn.textContent = 'Sign Up';
-      topAuthBtn.setAttribute('onclick', "toggleLandingAuth('register')");
+    if (tabLogin) {
+      tabLogin.classList.add('active');
+      tabLogin.style.background = '#ffffff';
+      tabLogin.style.color = '#0f172a';
     }
+    if (tabReg) {
+      tabReg.classList.remove('active');
+      tabReg.style.background = 'transparent';
+      tabReg.style.color = '#64748b';
+    }
+    if (heading) heading.textContent = 'Welcome to TOOLRENT';
   } else {
     if (formLogin) formLogin.style.display = 'none';
-    if (formReg) formReg.style.display = 'flex';
-    if (titleEl) titleEl.innerHTML = '<span>Create Your Account</span>';
-    if (subtitle) subtitle.textContent = 'Sign up to start renting equipment';
-    if (topAuthBtn) {
-      topAuthBtn.textContent = 'Sign In';
-      topAuthBtn.setAttribute('onclick', "toggleLandingAuth('login')");
+    if (formReg) formReg.style.display = 'block';
+    if (tabLogin) {
+      tabLogin.classList.remove('active');
+      tabLogin.style.background = 'transparent';
+      tabLogin.style.color = '#64748b';
     }
+    if (tabReg) {
+      tabReg.classList.add('active');
+      tabReg.style.background = '#ffffff';
+      tabReg.style.color = '#0f172a';
+    }
+    if (heading) heading.textContent = 'Create Customer Account';
   }
+}
+
+function openHowItWorksModal() {
+  openModal('modal-how-it-works');
+}
+
+function scrollToElement(id) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth' });
+  }
+}
+
+function filterLandingCategory(cat, clickedEl) {
+  document.querySelectorAll('#toolrent-category-list .category-card-item').forEach((item) => {
+    item.classList.remove('active');
+  });
+  if (clickedEl) clickedEl.classList.add('active');
+
+  const container = document.getElementById('landing-featured-tools-container');
+  if (!container) return;
+
+  const cards = container.querySelectorAll('.toolrent-product-card');
+  cards.forEach((card) => {
+    if (cat === 'All') {
+      card.style.display = 'flex';
+    } else {
+      const title = card.querySelector('.product-title').textContent.toLowerCase();
+      if (cat === 'Power Tools' && (title.includes('drill') || title.includes('saw') || title.includes('hammer'))) {
+        card.style.display = 'flex';
+      } else if (cat === 'Cleaning Equipment' && title.includes('washer')) {
+        card.style.display = 'flex';
+      } else if (cat === 'Concrete & Masonry' && title.includes('hammer')) {
+        card.style.display = 'flex';
+      } else {
+        card.style.display = 'flex';
+      }
+    }
+  });
+
+  scrollToElement('featured-tools-section');
+}
+
+function handleLandingSearch(query) {
+  const container = document.getElementById('landing-featured-tools-container');
+  if (!container) return;
+  const cards = container.querySelectorAll('.toolrent-product-card');
+  const q = query.toLowerCase().trim();
+
+  cards.forEach((card) => {
+    const title = card.querySelector('.product-title').textContent.toLowerCase();
+    if (!q || title.includes(q)) {
+      card.style.display = 'flex';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
+
+function openToolQuickRent(toolName) {
+  if (state.currentUser) {
+    switchTab('catalog');
+  } else {
+    openAuthModal('login');
+  }
+}
+
+window.openAuthModal = openAuthModal;
+window.switchAuthTab = switchAuthTab;
+window.openHowItWorksModal = openHowItWorksModal;
+window.scrollToElement = scrollToElement;
+window.filterLandingCategory = filterLandingCategory;
+window.handleLandingSearch = handleLandingSearch;
+window.openToolQuickRent = openToolQuickRent;
+
+function toggleLandingAuth(type) {
+  openAuthModal(type);
 }
 
 function quickDemoLogin(role, clickedBtn) {
