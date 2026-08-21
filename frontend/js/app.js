@@ -591,6 +591,14 @@ function checkDevEnvironment() {
 function openAuthModal(mode = 'login') {
   openModal('modal-auth');
   switchAuthTab(mode);
+  
+  if (mode === 'login') {
+    const rememberedEmail = localStorage.getItem('lions_remember_email');
+    const emailEl = document.getElementById('landing-login-email');
+    if (rememberedEmail && emailEl && !emailEl.value) {
+      emailEl.value = rememberedEmail;
+    }
+  }
 }
 
 function switchAuthTab(tab) {
@@ -853,6 +861,21 @@ if (loginFormEl) {
   });
 }
 
+// Auto-sync demo password when user types demo email
+const loginEmailInput = document.getElementById('landing-login-email');
+if (loginEmailInput) {
+  loginEmailInput.addEventListener('input', (e) => {
+    const val = e.target.value.trim().toLowerCase();
+    const passInput = document.getElementById('landing-login-password');
+    if (!passInput) return;
+    if (val === 'kamal@apex.lk' && (passInput.value === 'admin123' || !passInput.value)) {
+      passInput.value = 'customer123';
+    } else if (val === 'admin@lions.lk' && (passInput.value === 'customer123' || !passInput.value)) {
+      passInput.value = 'admin123';
+    }
+  });
+}
+
 // Form Accessibility: Ensure Enter in password/email fields triggers submit
 ['landing-login-email', 'landing-login-password'].forEach((id) => {
   const el = document.getElementById(id);
@@ -992,7 +1015,7 @@ window.openMobileSidebar = openMobileSidebar;
 window.closeMobileSidebar = closeMobileSidebar;
 window.toggleMobileSidebar = toggleMobileSidebar;
 
-// Attach click listeners to hamburger, overlay, close button and nav items
+// Attach click and key listeners to hamburger, overlay, close button and nav items
 document.addEventListener('DOMContentLoaded', () => {
   const hamburgerBtn = document.getElementById('btn-hamburger');
   if (hamburgerBtn) {
@@ -1017,6 +1040,13 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
+
+  // Close mobile sidebar on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeMobileSidebar();
+    }
+  });
 });
 
 // Update UI Layout based on Authentication State
@@ -1033,6 +1063,9 @@ function updateAuthUI() {
   const activeLeaseBtn = document.getElementById('header-active-lease-btn');
 
   if (currentUser && currentToken) {
+    // Dismiss any open auth modals
+    closeModal('modal-auth');
+
     // Authenticated: Show Main Application Dashboard
     if (landingContainer) landingContainer.style.display = 'none';
     if (mainAppContainer) mainAppContainer.style.display = 'block';
@@ -1166,6 +1199,10 @@ function switchTab(tabName) {
   }
 
   state.activeTab = tabName;
+
+  if (window.innerWidth < 1024) {
+    closeMobileSidebar();
+  }
 
   document.querySelectorAll('.nav-item').forEach((b) => {
     b.classList.toggle('active', b.getAttribute('data-tab') === tabName);
@@ -1489,15 +1526,19 @@ async function updateSidebarCategoryCounts() {
       if (el) el.textContent = count;
     };
 
+    // Update customer sidebar Storefront badge
+    const custCatalogBadge = document.getElementById('badge-cust-catalog-count');
+    if (custCatalogBadge) custCatalogBadge.textContent = all.length;
+
     setCount('cat-count-all', all.length);
-    setCount('cat-count-power', all.filter((t) => t.category.includes('Power')).length);
-    setCount('cat-count-hand', all.filter((t) => t.category.includes('Hand')).length);
-    setCount('cat-count-cleaning', all.filter((t) => t.category.includes('Cleaning')).length);
-    setCount('cat-count-heavy', all.filter((t) => t.category.includes('Heavy')).length);
-    setCount('cat-count-concrete', all.filter((t) => t.category.includes('Concrete')).length);
-    setCount('cat-count-surveying', all.filter((t) => t.category.includes('Surveying')).length);
-    setCount('cat-count-access', all.filter((t) => t.category.includes('Access')).length);
-    setCount('cat-count-gen', all.filter((t) => t.category.includes('Generators')).length);
+    setCount('cat-count-power', all.filter((t) => t.category === 'Power Tools').length);
+    setCount('cat-count-hand', all.filter((t) => t.category === 'Hand Tools').length);
+    setCount('cat-count-cleaning', all.filter((t) => t.category === 'Cleaning Equipment').length);
+    setCount('cat-count-heavy', all.filter((t) => t.category === 'Heavy Machinery').length);
+    setCount('cat-count-concrete', all.filter((t) => t.category === 'Concrete & Masonry').length);
+    setCount('cat-count-surveying', all.filter((t) => t.category === 'Surveying & Measuring').length);
+    setCount('cat-count-access', all.filter((t) => t.category === 'Access & Scaffolding').length);
+    setCount('cat-count-gen', all.filter((t) => t.category === 'Generators & Power').length);
   } catch (e) {
     console.warn('Could not update category counts:', e);
   }

@@ -2,11 +2,11 @@
   "name": "lions-engineering-rent-tool-system",
   "version": "1.0.0",
   "description": "Lions Engineering Tool Rental Management System",
-  "main": "backend/server.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node backend/server.js",
-    "dev": "node --watch backend/server.js",
-    "seed": "node backend/seed.js"
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "seed": "node seed.js"
   },
   "keywords": [
     "engineering",

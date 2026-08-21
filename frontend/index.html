@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Lions Engineering | Industrial Machinery & Tool Rental System</title>
   <meta name="description" content="Industrial Heavy Machinery, Engineering Equipment Rental, Logistics & Maintenance Management System">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -357,6 +357,7 @@
 
         <!-- Navigation for ADMIN Role -->
         <nav class="nav-menu" id="admin-nav-menu">
+          <div class="nav-section-label">OPERATIONS &amp; FLEET</div>
           <button class="nav-item active" data-tab="dashboard" id="nav-dashboard">
             <i class="fa-solid fa-chart-pie"></i>
             <span data-i18n="nav_dashboard">Dashboard Overview</span>
@@ -376,6 +377,7 @@
             <span data-i18n="nav_maintenance">Maintenance & Repairs</span>
             <span class="badge-count" id="badge-total-maintenance">0</span>
           </button>
+          <div class="nav-section-label">FINANCE &amp; DIRECTORY</div>
           <button class="nav-item" data-tab="payments" id="nav-payments">
             <i class="fa-solid fa-credit-card"></i>
             <span>Payments & Deposits</span>
@@ -390,6 +392,7 @@
 
         <!-- Navigation for CUSTOMER Role -->
         <nav class="nav-menu" id="customer-nav-menu" style="display:none;">
+          <div class="nav-section-label">CONTRACTOR PORTAL</div>
           <button class="nav-item active" data-tab="catalog" id="nav-customer-catalog">
             <i class="fa-solid fa-store"></i>
             <span>Equipment Storefront</span>
@@ -1196,15 +1199,18 @@
           <div class="form-group">
             <label>Email Address</label>
             <div class="input-wrap">
-              <input type="email" id="landing-login-email" class="form-control" placeholder="admin@lions.lk" value="admin@lions.lk" required>
+              <input type="email" id="landing-login-email" class="form-control" placeholder="e.g. yourname@example.com" autocomplete="username" required>
             </div>
           </div>
 
           <div class="form-group">
-            <label>Password</label>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+              <label style="margin-bottom: 0;">Password</label>
+              <span style="font-size: 11px; color: #64748b;">(Demo: <strong>customer123</strong> / <strong>admin123</strong>)</span>
+            </div>
             <div class="input-wrap" style="position: relative;">
-              <input type="password" id="landing-login-password" class="form-control" placeholder="••••••••" value="admin123" required>
-              <button type="button" class="btn-toggle-eye" onclick="togglePasswordVisibility('landing-login-password', this)" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #94a3b8; cursor: pointer;">
+              <input type="password" id="landing-login-password" class="form-control" placeholder="Enter your password" autocomplete="current-password" required>
+              <button type="button" class="btn-toggle-eye" onclick="togglePasswordVisibility('landing-login-password', this)" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #94a3b8; cursor: pointer;" aria-label="Toggle password visibility">
                 <i class="fa-regular fa-eye"></i>
               </button>
             </div>
@@ -1225,7 +1231,7 @@
           <!-- Quick 1-Click Demo Logins -->
           <div class="auth-divider-or" style="display: flex; align-items: center; margin: 18px 0; color: #94a3b8; font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">
             <span style="flex: 1; height: 1px; background: #e2e8f0;"></span>
-            <span style="padding: 0 12px;">ONE-CLICK DEMO ACCESS</span>
+            <span style="padding: 0 12px;">OR ONE-CLICK DEMO ACCESS</span>
             <span style="flex: 1; height: 1px; background: #e2e8f0;"></span>
           </div>
           <div class="demo-login-actions" style="display: flex; gap: 10px;">
@@ -1233,7 +1239,7 @@
               <i class="fa-solid fa-shield-halved text-gold"></i> Admin Yard
             </button>
             <button type="button" class="btn btn-outline" style="flex: 1; font-size: 12px; font-weight: 700; padding: 10px;" onclick="quickDemoLogin('customer', this)">
-              <i class="fa-solid fa-user-tie text-teal"></i> Contractor
+              <i class="fa-solid fa-user-tie text-teal"></i> Contractor (Kamal)
             </button>
           </div>
         </form>

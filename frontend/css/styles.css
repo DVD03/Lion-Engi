@@ -764,6 +764,14 @@ body {
   display: none;
 }
 
+.btn-hamburger {
+  display: none;
+}
+
+.sidebar-overlay {
+  display: none;
+}
+
 .brand-logo {
   width: 44px;
   height: 44px;
@@ -805,19 +813,30 @@ body {
   display: block;
 }
 
-/* Nav Menu */
+/* Nav Menu & Section Category Headers (Matching Reference Design) */
 .nav-menu {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
   margin-top: 4px;
+}
+
+.nav-section-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #94a3b8;
+  text-transform: uppercase;
+  padding: 12px 14px 4px 14px;
+  margin-top: 6px;
+  user-select: none;
 }
 
 .nav-item {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 14px;
+  padding: 11px 14px;
   border-radius: 12px;
   background: transparent;
   border: 1.5px solid transparent;
@@ -825,7 +844,7 @@ body {
   font-size: 13.5px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.18s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   text-align: left;
   width: 100%;
 }
@@ -835,44 +854,47 @@ body {
   width: 20px;
   color: #64748b;
   text-align: center;
-  transition: color 0.18s ease;
+  transition: color 0.2s ease;
 }
 
 .nav-item:hover {
-  background: #f8fafc;
+  background: #f1f5f9;
   color: #0f172a;
 }
 
 .nav-item:hover i {
-  color: var(--gold-hover);
+  color: #0f172a;
 }
 
+/* Solid rounded dark-blue / navy pill active navigation item */
 .nav-item.active {
-  background: #fefce8 !important;
-  color: #92400e !important;
-  border: 1.5px solid #fef08a !important;
+  background: #001242 !important;
+  color: #ffffff !important;
+  border-color: #001242 !important;
   font-weight: 700 !important;
+  box-shadow: 0 4px 14px rgba(0, 18, 66, 0.22) !important;
 }
 
 .nav-item.active i {
-  color: #d97706 !important;
+  color: #ffffff !important;
 }
 
 .badge-count {
   margin-left: auto;
   background: #f1f5f9;
   color: #475569;
-  font-size: 11.5px;
-  padding: 2px 9px;
+  font-size: 11px;
+  padding: 2px 8px;
   border-radius: 999px;
   font-weight: 700;
   min-width: 20px;
   text-align: center;
+  transition: all 0.2s ease;
 }
 
 .nav-item.active .badge-count {
-  background: #fef08a !important;
-  color: #854d0e !important;
+  background: rgba(255, 255, 255, 0.22) !important;
+  color: #ffffff !important;
 }
 
 .badge-count.badge-warning {
@@ -3537,13 +3559,13 @@ body {
     bottom: 0 !important;
     height: 100vh !important;
     height: 100dvh !important;
-    width: 290px !important;
-    max-width: 85vw !important;
+    width: 285px !important;
+    max-width: 82vw !important;
     z-index: 10000 !important;
     background: #ffffff !important;
-    box-shadow: 10px 0 35px rgba(0, 0, 0, 0.25) !important;
+    box-shadow: 10px 0 40px rgba(0, 0, 0, 0.25) !important;
     transform: translateX(-105%) !important;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.28s !important;
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch !important;
     visibility: hidden !important;
@@ -3563,10 +3585,11 @@ body {
 
   body.sidebar-open {
     overflow: hidden !important;
+    touch-action: none !important;
   }
 
   .sidebar-overlay {
-    display: none;
+    display: block !important;
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
@@ -3578,46 +3601,67 @@ body {
     backdrop-filter: blur(4px) !important;
     -webkit-backdrop-filter: blur(4px) !important;
     z-index: 9999 !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    transition: opacity 0.25s ease, visibility 0.25s ease !important;
   }
 
   .sidebar-overlay.visible,
   .sidebar-overlay.active,
   .sidebar-overlay.show,
   body.sidebar-open .sidebar-overlay {
-    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
   }
 
   .btn-hamburger {
     display: flex !important;
     align-items: center;
     justify-content: center;
-    width: 42px;
-    height: 42px;
+    width: 40px;
+    height: 40px;
     border-radius: 10px;
-    background: #fffbeb !important;
-    border: 1.5px solid var(--gold-primary) !important;
-    color: #b45309 !important;
-    font-size: 18px;
+    background: #ffffff !important;
+    border: 1.5px solid #e2e8f0 !important;
+    color: #0f172a !important;
+    font-size: 17px;
     cursor: pointer;
     transition: var(--transition);
     flex-shrink: 0;
     touch-action: manipulation;
   }
 
+  .btn-hamburger:hover,
+  .btn-hamburger:active {
+    background: #f8fafc !important;
+    border-color: #cbd5e1 !important;
+    color: #0f172a !important;
+  }
+
   .btn-sidebar-close {
     display: flex !important;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
+    width: 34px;
+    height: 34px;
     border-radius: 8px;
     background: #f1f5f9;
     border: none;
     color: #475569;
-    font-size: 24px;
+    font-size: 22px;
     line-height: 1;
     cursor: pointer;
     margin-left: auto;
+    transition: all 0.15s ease;
+    touch-action: manipulation;
+  }
+
+  .btn-sidebar-close:hover,
+  .btn-sidebar-close:active {
+    background: #e2e8f0;
+    color: #0f172a;
   }
 
   /* Dashboard Split Stacking (Right-hand Category panel stacks below main table) */
