@@ -970,11 +970,17 @@ function closeMobileSidebar() {
 
 function toggleMobileSidebar(e) {
   if (e) {
-    e.preventDefault();
-    e.stopPropagation();
+    if (typeof e.preventDefault === 'function') e.preventDefault();
+    if (typeof e.stopPropagation === 'function') e.stopPropagation();
   }
   const sidebar = document.querySelector('.sidebar');
-  if (sidebar && (sidebar.classList.contains('open') || sidebar.classList.contains('active'))) {
+  const overlay = document.getElementById('sidebar-overlay');
+  if (!sidebar) return;
+  const isCurrentlyOpen = sidebar.classList.contains('open') || 
+                          sidebar.classList.contains('active') || 
+                          sidebar.classList.contains('show') || 
+                          document.body.classList.contains('sidebar-open');
+  if (isCurrentlyOpen) {
     closeMobileSidebar();
   } else {
     openMobileSidebar();
