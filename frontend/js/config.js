@@ -1,9 +1,8 @@
 /**
  * Lions Engineering - Deployment Configuration
- * 
- * BACKEND_API_URL:
- * - If Backend is deployed on Render (e.g. https://lions-engineering-backend.onrender.com)
- *   and Frontend is on Vercel, set your Render backend URL here with '/api' suffix.
- * - If running locally or as a fullstack monolith on Render, leave it as '/api'.
+ * Backend Live URL: https://lion-engi.onrender.com
  */
-window.API_BASE = window.API_BASE || '/api';
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+// Automatically uses live Render backend on Vercel/production, or '/api' on localhost
+window.API_BASE = isLocal ? '/api' : 'https://lion-engi.onrender.com/api';
