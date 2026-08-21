@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node backend/server.js",
     "dev": "node --watch backend/server.js",
-    "seed": "node backend/seed.js"
+    "seed": "node backend/seed.js",
+    "build": "npm install"
   },
   "keywords": [
     "engineering",

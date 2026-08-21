@@ -3,7 +3,7 @@
  * Dedicated Full-Screen Landing & Auth Portal, Role Redirection (Admin vs Customer), Payments & Invoices
  */
 
-const API_BASE = '/api';
+const API_BASE = window.API_BASE || localStorage.getItem('lions_api_base') || '/api';
 
 // Current session state
 let currentToken = localStorage.getItem('lions_token') || '';
