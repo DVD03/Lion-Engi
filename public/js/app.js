@@ -1305,8 +1305,18 @@ async function loadDashboard() {
       document.getElementById('kpi-overdue-rentals').textContent = kpis.overdueRentals;
       document.getElementById('kpi-total-revenue').textContent = formatLKR(kpis.totalRevenue);
 
-      document.getElementById('badge-total-tools').textContent = kpis.totalTools;
-      document.getElementById('badge-active-rentals').textContent = kpis.activeRentals;
+      if (document.getElementById('badge-total-tools')) document.getElementById('badge-total-tools').textContent = kpis.totalTools || 0;
+      if (document.getElementById('badge-active-rentals')) document.getElementById('badge-active-rentals').textContent = kpis.activeRentals || 0;
+      if (document.getElementById('badge-total-maintenance')) document.getElementById('badge-total-maintenance').textContent = kpis.underMaintenance || 0;
+      if (document.getElementById('badge-total-payments')) document.getElementById('badge-total-payments').textContent = kpis.completedRentals || 0;
+      if (document.getElementById('badge-total-users')) document.getElementById('badge-total-users').textContent = kpis.totalCustomers || 0;
+
+      if (currentUser && document.getElementById('sidebar-user-name')) {
+        document.getElementById('sidebar-user-name').textContent = currentUser.name || 'Lions System Administrator';
+      }
+      if (currentUser && document.getElementById('sidebar-user-role')) {
+        document.getElementById('sidebar-user-role').textContent = currentUser.role === 'admin' ? 'System Administrator' : 'Verified Contractor';
+      }
 
       const catContainer = document.getElementById('dashboard-categories');
       catContainer.innerHTML = '';
@@ -3697,9 +3707,13 @@ document.getElementById('global-search').addEventListener('input', () => {
   renderActiveTab();
 });
 
-document.getElementById('btn-quick-rent').addEventListener('click', () => prepareNewRentalModal());
+document.getElementById('btn-quick-rent').addEventListener('click', () => {
+  closeMobileSidebar();
+  prepareNewRentalModal();
+});
 
 document.getElementById('btn-quick-add-tool').addEventListener('click', () => {
+  closeMobileSidebar();
   document.getElementById('form-tool').reset();
   document.getElementById('tool-edit-id').value = '';
   document.getElementById('modal-tool-title').textContent = 'Add New Tool to Inventory';
@@ -3713,7 +3727,10 @@ document.getElementById('btn-add-tool-modal').addEventListener('click', () => {
   openModal('modal-tool');
 });
 
-document.getElementById('btn-quick-log-maint').addEventListener('click', () => openLogMaintModal());
+document.getElementById('btn-quick-log-maint').addEventListener('click', () => {
+  closeMobileSidebar();
+  openLogMaintModal();
+});
 document.getElementById('btn-add-maintenance-modal').addEventListener('click', () => openLogMaintModal());
 document.getElementById('btn-view-all-rentals').addEventListener('click', () => switchTab('rentals'));
 
