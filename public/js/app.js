@@ -1879,14 +1879,15 @@ function exportInventoryToCSV() {
 async function loadTools() {
   try {
     let url = `${API_BASE}/tools?category=${encodeURIComponent(state.filterCategory)}&status=${encodeURIComponent(state.filterStatus)}`;
-    const searchVal = document.getElementById('global-search').value.trim();
+    const searchInput = document.getElementById('global-search');
+    const searchVal = searchInput ? searchInput.value.trim() : '';
     if (searchVal) url += `&search=${encodeURIComponent(searchVal)}`;
 
-    const res = await fetch(url);
+    const res = await authFetch(url);
     const json = await res.json();
 
     if (json.success) {
-      state.tools = json.data;
+      state.tools = json.data || [];
       renderToolsGrid(state.tools);
       renderInventoryTable(state.tools);
     }
@@ -2161,7 +2162,7 @@ function renderMaintenanceTable(logs) {
 }
 
 async function openLogMaintModal(preselectedToolId = null) {
-  const res = await fetch(`${API_BASE}/tools`);
+  const res = await authFetch(`${API_BASE}/tools`);
   const json = await res.json();
   const allTools = json.success ? json.data : [];
 
@@ -2427,8 +2428,8 @@ function updateSelectedToolSummaryCard(toolId) {
 
 async function prepareNewRentalModal(preselectedCustId = null, preselectedToolId = null) {
   const [toolsRes, usersRes] = await Promise.all([
-    fetch(`${API_BASE}/tools/available`).then((r) => r.json()),
-    fetch(`${API_BASE}/auth/users`).then((r) => r.json()).catch(() => ({ success: false })),
+    authFetch(`${API_BASE}/tools/available`).then((r) => r.json()),
+    authFetch(`${API_BASE}/auth/users`).then((r) => r.json()).catch(() => ({ success: false })),
   ]);
 
   state.availableTools = toolsRes.success ? toolsRes.data : [];
