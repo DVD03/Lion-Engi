@@ -19,12 +19,14 @@ router.get('/dashboard', protect, requireRole('admin'), async (req, res) => {
     const overdueRentals = await Rental.countDocuments({ status: 'Overdue' });
     const completedRentals = await Rental.countDocuments({ status: 'Completed' });
 
-    // Aggregate total rental revenue
+    // Aggregate total rental revenue and total outstanding balances
     const revenueAgg = await Rental.aggregate([
       {
         $group: {
           _id: null,
-          totalRevenue: { $sum: '$rentAmount' },
+          totalRevenue: { $sum: '$paidAmount' },
+          totalContractValue: { $sum: '$totalAmount' },
+          totalOutstandingBalance: { $sum: '$balanceDue' },
           totalLateFees: { $sum: '$lateFee' },
           totalDamageFees: { $sum: '$damageFee' },
         },
@@ -33,7 +35,12 @@ router.get('/dashboard', protect, requireRole('admin'), async (req, res) => {
 
     const revenue =
       revenueAgg.length > 0
-        ? (revenueAgg[0].totalRevenue || 0) + (revenueAgg[0].totalLateFees || 0)
+        ? (revenueAgg[0].totalRevenue || 0)
+        : 0;
+
+    const totalOutstandingBalance =
+      revenueAgg.length > 0
+        ? (revenueAgg[0].totalOutstandingBalance || 0)
         : 0;
 
     // Recent 6 rentals
@@ -69,6 +76,7 @@ router.get('/dashboard', protect, requireRole('admin'), async (req, res) => {
           overdueRentals,
           completedRentals,
           totalRevenue: revenue,
+          totalOutstandingBalance,
         },
         categoryStats,
         recentRentals,

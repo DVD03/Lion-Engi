@@ -29,6 +29,11 @@ const customerSchema = new mongoose.Schema(
       required: [true, 'Physical address / Headquarters is required'],
       trim: true,
     },
+    outstandingBalance: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
   },
   { timestamps: true }
 );

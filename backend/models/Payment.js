@@ -12,6 +12,16 @@ const paymentSchema = new mongoose.Schema(
       ref: 'User',
       required: [true, 'User reference is required'],
     },
+    customer_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Customer',
+    },
+    customer_nic: {
+      type: String,
+      trim: true,
+      uppercase: true,
+      default: '',
+    },
     amount: {
       type: Number,
       required: [true, 'Payment amount is required'],
@@ -19,7 +29,7 @@ const paymentSchema = new mongoose.Schema(
     },
     payment_type: {
       type: String,
-      enum: ['Security Deposit', 'Rental Fee', 'Late Fee', 'Damage Fee', 'Full Balance'],
+      enum: ['Security Deposit', 'Rental Fee', 'Late Fee', 'Damage Fee', 'Full Balance', 'Partial Payment', 'Balance Settlement', 'Advance'],
       default: 'Full Balance',
     },
     payment_method: {
@@ -31,6 +41,11 @@ const paymentSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
+      trim: true,
+    },
+    notes: {
+      type: String,
+      default: '',
       trim: true,
     },
     status: {
@@ -46,6 +61,6 @@ const paymentSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-paymentSchema.index({ rental_id: 1, user_id: 1, transaction_ref: 1 });
+paymentSchema.index({ rental_id: 1, user_id: 1, customer_id: 1, customer_nic: 1, transaction_ref: 1 });
 
 module.exports = mongoose.model('Payment', paymentSchema);

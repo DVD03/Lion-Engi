@@ -103,6 +103,22 @@ const rentalSchema = new mongoose.Schema(
       required: true,
       min: 0,
     },
+    paidAmount: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    balanceDue: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    customer_nic: {
+      type: String,
+      trim: true,
+      uppercase: true,
+      default: '',
+    },
     status: {
       type: String,
       enum: ['Active', 'Overdue', 'Completed', 'Cancelled', 'Pending', 'Pending Dispatch'],
@@ -165,7 +181,9 @@ rentalSchema.virtual('end_date').get(function () { return this.dueDate; });
 rentalSchema.virtual('delivery_type').get(function () { return this.deliveryMode; });
 rentalSchema.virtual('rental_status').get(function () { return this.status; });
 rentalSchema.virtual('total_amount').get(function () { return this.totalAmount; });
+rentalSchema.virtual('paid_amount').get(function () { return this.paidAmount; });
+rentalSchema.virtual('balance_due').get(function () { return this.balanceDue; });
 
-rentalSchema.index({ rentalCode: 1, user_id: 1, customer: 1, tool: 1, status: 1 });
+rentalSchema.index({ rentalCode: 1, user_id: 1, customer: 1, customer_nic: 1, tool: 1, status: 1 });
 
 module.exports = mongoose.model('Rental', rentalSchema);

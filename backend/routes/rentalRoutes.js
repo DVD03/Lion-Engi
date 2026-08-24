@@ -7,6 +7,7 @@ const User = require('../models/User');
 const Payment = require('../models/Payment');
 const PDFDocument = require('pdfkit');
 const NotificationService = require('../services/notificationService');
+const { syncCustomerOutstandingBalance } = require('../utils/customerBalance');
 const { protect, requireRole } = require('../middleware/authMiddleware');
 
 // Helper to auto-update overdue rentals
@@ -142,12 +143,13 @@ router.get('/:id', async (req, res) => {
 });
 
 // @route   POST /api/rentals
-// @desc    Create new rental agreement (Admin or Customer Booking)
+// @desc    Create new rental agreement (Admin or Customer Booking) with Partial Payment & NIC Tracking
 router.post('/', async (req, res) => {
   try {
     const {
       customerId,
       userId,
+      customerNic,
       toolId,
       startDate,
       dueDate,
@@ -155,6 +157,9 @@ router.post('/', async (req, res) => {
       deliveryMode,
       deliveryFee,
       deliveryAddress,
+      paidAmount,
+      initialPaymentAmount,
+      paymentMethod,
       paymentStatus,
       notes,
       kycDocumentUrl,
@@ -175,16 +180,38 @@ router.post('/', async (req, res) => {
       });
     }
 
-    // Resolve user ID
+    // Resolve user & customer IDs and NIC
     let assignedUserId = userId;
+    let resolvedCustomerId = customerId;
+    let resolvedNic = customerNic ? customerNic.trim().toUpperCase() : '';
+
+    if (resolvedCustomerId) {
+      const custObj = await Customer.findById(resolvedCustomerId);
+      if (custObj && !resolvedNic) resolvedNic = custObj.nicOrPassport;
+    } else if (resolvedNic) {
+      const custObj = await Customer.findOne({ nicOrPassport: resolvedNic });
+      if (custObj) resolvedCustomerId = custObj._id;
+    }
+
     if (!assignedUserId) {
-      // Find or fallback to first user/customer
-      const existingUser = await User.findOne({ role: 'customer' });
-      if (existingUser) assignedUserId = existingUser._id;
-      else {
-        const adminUser = await User.findOne({ role: 'admin' });
-        assignedUserId = adminUser ? adminUser._id : customerId;
+      // Find or fallback to matching user by NIC or first user/customer
+      if (resolvedNic) {
+        const userByNic = await User.findOne({ nic_or_passport: resolvedNic });
+        if (userByNic) assignedUserId = userByNic._id;
       }
+      if (!assignedUserId) {
+        const existingUser = await User.findOne({ role: 'customer' });
+        if (existingUser) assignedUserId = existingUser._id;
+        else {
+          const adminUser = await User.findOne({ role: 'admin' });
+          assignedUserId = adminUser ? adminUser._id : (resolvedCustomerId || null);
+        }
+      }
+    }
+
+    if (!resolvedNic && assignedUserId) {
+      const u = await User.findById(assignedUserId);
+      if (u && u.nic_or_passport) resolvedNic = u.nic_or_passport;
     }
 
     const start = new Date(startDate);
@@ -197,13 +224,38 @@ router.post('/', async (req, res) => {
     const transFee = deliveryMode === 'Site Delivery' ? Number(deliveryFee) || 3500 : 0;
     const totalAmount = rentAmount + depositAmount + transFee;
 
+    // Calculate paid amount and remaining balance due
+    let parsedPaidAmount = 0;
+    if (paidAmount !== undefined && paidAmount !== null && paidAmount !== '') {
+      parsedPaidAmount = Math.max(0, Number(paidAmount));
+    } else if (initialPaymentAmount !== undefined && initialPaymentAmount !== null && initialPaymentAmount !== '') {
+      parsedPaidAmount = Math.max(0, Number(initialPaymentAmount));
+    } else if (paymentStatus === 'Paid' || !paymentStatus) {
+      // Default to full payment if not explicitly given
+      parsedPaidAmount = totalAmount;
+    }
+
+    // Ensure paid amount does not exceed totalAmount
+    parsedPaidAmount = Math.min(totalAmount, parsedPaidAmount);
+    const balanceDue = Math.max(0, totalAmount - parsedPaidAmount);
+
+    let calculatedPaymentStatus = 'Paid';
+    if (balanceDue === 0) {
+      calculatedPaymentStatus = 'Paid';
+    } else if (parsedPaidAmount > 0) {
+      calculatedPaymentStatus = 'Partially Paid';
+    } else {
+      calculatedPaymentStatus = 'Pending';
+    }
+
     const count = await Rental.countDocuments();
     const rentalCode = `LE-RENT-${String(count + 1001).padStart(4, '0')}`;
 
     const newRental = new Rental({
       rentalCode,
       user_id: assignedUserId,
-      customer: customerId || assignedUserId,
+      customer: resolvedCustomerId || assignedUserId,
+      customer_nic: resolvedNic,
       tool: toolId,
       startDate: start,
       dueDate: due,
@@ -215,8 +267,10 @@ router.post('/', async (req, res) => {
       deliveryAddress: deliveryAddress || siteLocation || 'Direct Store Pickup',
       startMeterReading: Number(startMeterReading) || tool.currentMeterReading || 0,
       totalAmount,
+      paidAmount: parsedPaidAmount,
+      balanceDue,
       status: 'Active',
-      paymentStatus: paymentStatus || 'Paid',
+      paymentStatus: calculatedPaymentStatus,
       depositStatus: 'Held',
       siteLocation: siteLocation || 'Project Site',
       returnNotes: notes || '',
@@ -232,17 +286,25 @@ router.post('/', async (req, res) => {
     if (startMeterReading) tool.currentMeterReading = Number(startMeterReading);
     await tool.save();
 
-    // Record initial payment
-    await Payment.create({
-      rental_id: savedRental._id,
-      user_id: assignedUserId,
-      amount: totalAmount,
-      payment_type: 'Full Balance',
-      payment_method: 'Gateway',
-      transaction_ref: `PAY-LE-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
-      status: 'Successful',
-      paid_at: new Date(),
-    });
+    // Record initial payment transaction if any payment was made
+    if (parsedPaidAmount > 0) {
+      await Payment.create({
+        rental_id: savedRental._id,
+        user_id: assignedUserId,
+        customer_id: resolvedCustomerId || null,
+        customer_nic: resolvedNic,
+        amount: parsedPaidAmount,
+        payment_type: parsedPaidAmount >= totalAmount ? 'Full Balance' : 'Partial Payment',
+        payment_method: paymentMethod || 'Gateway',
+        transaction_ref: `PAY-LE-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+        notes: `Initial ${parsedPaidAmount >= totalAmount ? 'full payment' : 'partial payment'} upon lease booking`,
+        status: 'Successful',
+        paid_at: new Date(),
+      });
+    }
+
+    // Recalculate customer's total outstanding balance
+    await syncCustomerOutstandingBalance(resolvedCustomerId, resolvedNic);
 
     // Populate and trigger automated WhatsApp alert
     const populated = await Rental.findById(savedRental._id)
@@ -257,7 +319,7 @@ router.post('/', async (req, res) => {
     res.status(201).json({
       success: true,
       data: populated,
-      message: 'Rental agreement created, payment processed & confirmation alert dispatched via WhatsApp/SMS!',
+      message: `Rental agreement created successfully! Paid: LKR ${parsedPaidAmount.toLocaleString()}, Balance Due: LKR ${balanceDue.toLocaleString()} (Status: ${calculatedPaymentStatus})`,
     });
   } catch (err) {
     res.status(400).json({ success: false, error: err.message });
@@ -393,8 +455,61 @@ router.patch('/:id/return', protect, requireRole('admin'), async (req, res) => {
       rental.depositStatus = 'Deducted';
     }
 
+    // Update total contract bill amount including additional inspection deductions
+    const updatedTotalAmount =
+      (rental.rentAmount || 0) +
+      (rental.depositAmount || 0) +
+      (rental.deliveryFee || 0) +
+      calculatedLateFee +
+      parsedDamageFee +
+      excessMeterFee;
+
+    rental.totalAmount = updatedTotalAmount;
+
+    // Handle return desk payment if customer made a payment at the counter
+    const { returnPaymentAmount, returnPaymentMethod, returnPaymentNotes } = req.body;
+    const parsedReturnPay = Number(returnPaymentAmount) || 0;
+
+    if (parsedReturnPay > 0) {
+      await Payment.create({
+        rental_id: rental._id,
+        user_id: rental.user_id ? (rental.user_id._id || rental.user_id) : req.user._id,
+        customer_id: rental.customer ? (rental.customer._id || rental.customer) : null,
+        customer_nic: rental.customer_nic || (rental.customer ? rental.customer.nicOrPassport : ''),
+        amount: parsedReturnPay,
+        payment_type: 'Balance Settlement',
+        payment_method: returnPaymentMethod || 'Cash',
+        transaction_ref: `PAY-LE-RET-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+        notes: returnPaymentNotes || `Payment collected upon equipment return settlement for bill ${rental.rentalCode}`,
+        status: 'Successful',
+        paid_at: new Date(),
+      });
+
+      rental.paidAmount = (rental.paidAmount || 0) + parsedReturnPay;
+    }
+
+    // Recalculate remaining balance due and payment status
+    const currentPaid = rental.paidAmount || 0;
+    const finalBalanceDue = Math.max(0, updatedTotalAmount - currentPaid);
+    rental.balanceDue = finalBalanceDue;
+
+    if (finalBalanceDue === 0) {
+      rental.paymentStatus = 'Paid';
+    } else if (currentPaid > 0) {
+      rental.paymentStatus = 'Partially Paid';
+    } else {
+      rental.paymentStatus = 'Pending';
+    }
+
+    // Close and finalize the bill as Completed even if an outstanding balance remains
     rental.status = 'Completed';
     await rental.save();
+
+    // Sync customer's total outstanding balance across all bills
+    const syncRes = await syncCustomerOutstandingBalance(
+      rental.customer ? (rental.customer._id || rental.customer) : null,
+      rental.customer_nic
+    );
 
     // Revert tool status & update current meter reading
     if (rental.tool) {
@@ -420,8 +535,79 @@ router.patch('/:id/return', protect, requireRole('admin'), async (req, res) => {
         excessMeterFee,
         netRefundOrDue: netDepositRefund,
         depositStatus: rental.depositStatus,
+        totalBill: updatedTotalAmount,
+        totalPaid: currentPaid,
+        balanceDue: finalBalanceDue,
+        paymentStatus: rental.paymentStatus,
+        customerOutstandingBalance: syncRes.outstandingBalance,
       },
-      message: 'Return inspection completed and deposit settlement calculated successfully',
+      message: `Return completed and bill finalized! Total Paid: LKR ${currentPaid.toLocaleString()}, Remaining Balance: LKR ${finalBalanceDue.toLocaleString()} (Tracked under NIC: ${rental.customer_nic || 'N/A'})`,
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// @route   POST /api/rentals/:id/settle-balance
+// @desc    Record a follow-up balance settlement payment towards an outstanding bill
+router.post('/:id/settle-balance', protect, async (req, res) => {
+  try {
+    const { amount, paymentMethod, notes, transactionRef } = req.body;
+    const payAmt = Number(amount);
+
+    if (!payAmt || payAmt <= 0) {
+      return res.status(400).json({ success: false, message: 'Please provide a valid payment amount greater than 0' });
+    }
+
+    const rental = await Rental.findById(req.params.id)
+      .populate('tool')
+      .populate('customer')
+      .populate('user_id');
+
+    if (!rental) {
+      return res.status(404).json({ success: false, message: 'Rental agreement not found' });
+    }
+
+    if (!rental.balanceDue || rental.balanceDue <= 0) {
+      return res.status(400).json({ success: false, message: 'This rental agreement is already fully paid (Balance Due: LKR 0)' });
+    }
+
+    const actualPayAmt = Math.min(payAmt, rental.balanceDue);
+    const newPaidAmount = (rental.paidAmount || 0) + actualPayAmt;
+    const newBalanceDue = Math.max(0, rental.totalAmount - newPaidAmount);
+
+    rental.paidAmount = newPaidAmount;
+    rental.balanceDue = newBalanceDue;
+    rental.paymentStatus = newBalanceDue === 0 ? 'Paid' : 'Partially Paid';
+    await rental.save();
+
+    const payment = await Payment.create({
+      rental_id: rental._id,
+      user_id: rental.user_id ? (rental.user_id._id || rental.user_id) : req.user._id,
+      customer_id: rental.customer ? (rental.customer._id || rental.customer) : null,
+      customer_nic: rental.customer_nic || (rental.customer ? rental.customer.nicOrPassport : ''),
+      amount: actualPayAmt,
+      payment_type: newBalanceDue === 0 ? 'Full Balance' : 'Balance Settlement',
+      payment_method: paymentMethod || 'Cash',
+      transaction_ref: transactionRef || `PAY-LE-SETTLE-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      notes: notes || `Follow-up balance payment for bill ${rental.rentalCode}`,
+      status: 'Successful',
+      paid_at: new Date(),
+    });
+
+    const syncRes = await syncCustomerOutstandingBalance(
+      rental.customer ? (rental.customer._id || rental.customer) : null,
+      rental.customer_nic
+    );
+
+    res.json({
+      success: true,
+      message: `Payment of LKR ${actualPayAmt.toLocaleString()} recorded successfully! Remaining balance: LKR ${newBalanceDue.toLocaleString()}`,
+      data: {
+        rental,
+        payment,
+        customerOutstandingBalance: syncRes.outstandingBalance,
+      },
     });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
@@ -621,14 +807,33 @@ router.get('/:id/pdf', async (req, res) => {
       currentY += 20;
     });
 
-    // Grand Total Box
-    doc.rect(40, currentY, 515, 26).fill('#0f172a');
-    doc.fillColor('#fbbf24').font('Helvetica-Bold').fontSize(11);
-    doc.text('TOTAL CONTRACT INVOICE VALUE:', 50, currentY + 7);
-    doc.text(`LKR ${rental.totalAmount.toLocaleString()}`, 380, currentY + 7, { width: 165, align: 'right' });
+    // Financial Summary Totals Block
+    doc.rect(40, currentY, 515, 62).fill('#0f172a');
+    doc.fillColor('#94a3b8').font('Helvetica').fontSize(9);
+    doc.text('TOTAL CONTRACT INVOICE VALUE:', 50, currentY + 8);
+    doc.fillColor('#fbbf24').font('Helvetica-Bold').fontSize(10);
+    doc.text(`LKR ${rental.totalAmount.toLocaleString()}`, 380, currentY + 8, { width: 165, align: 'right' });
+
+    doc.fillColor('#94a3b8').font('Helvetica').fontSize(9);
+    doc.text('TOTAL AMOUNT PAID TO DATE:', 50, currentY + 24);
+    doc.fillColor('#10b981').font('Helvetica-Bold').fontSize(10);
+    doc.text(`LKR ${(rental.paidAmount || 0).toLocaleString()}`, 380, currentY + 24, { width: 165, align: 'right' });
+
+    const balDue = rental.balanceDue !== undefined ? rental.balanceDue : Math.max(0, rental.totalAmount - (rental.paidAmount || 0));
+    doc.fillColor('#94a3b8').font('Helvetica').fontSize(9);
+    doc.text('OUTSTANDING DUE BALANCE:', 50, currentY + 40);
+    if (balDue > 0) {
+      doc.fillColor('#ef4444').font('Helvetica-Bold').fontSize(11);
+      doc.text(`LKR ${balDue.toLocaleString()} (UNSETTLED DUE)`, 340, currentY + 40, { width: 205, align: 'right' });
+    } else {
+      doc.fillColor('#10b981').font('Helvetica-Bold').fontSize(11);
+      doc.text('LKR 0 (PAID IN FULL)', 380, currentY + 40, { width: 165, align: 'right' });
+    }
+
+    currentY += 66;
 
     // Terms & Signatures
-    const sigY = currentY + 45;
+    const sigY = currentY + 15;
     doc.fillColor('#64748b').fontSize(8).font('Helvetica');
     doc.text('TERMS & CONDITIONS: The lessee agrees to operate equipment safely and return in clean condition. Any damage beyond fair wear & tear will be deducted from security deposit.', 40, sigY, { width: 515 });
 

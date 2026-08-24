@@ -1342,6 +1342,15 @@ async function loadDashboard() {
       document.getElementById('kpi-overdue-rentals').textContent = kpis.overdueRentals;
       document.getElementById('kpi-total-revenue').textContent = formatLKR(kpis.totalRevenue);
 
+      const revSub = document.querySelector('#tab-dashboard .kpi-card:nth-child(4) .kpi-sub');
+      if (revSub) {
+        if (kpis.totalOutstandingBalance > 0) {
+          revSub.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-danger"></i> <span class="text-danger font-bold">Unpaid Due: ${formatLKR(kpis.totalOutstandingBalance)}</span>`;
+        } else {
+          revSub.innerHTML = `<i class="fa-solid fa-circle-check text-success"></i> <span class="text-success">All Dues Settled</span>`;
+        }
+      }
+
       if (document.getElementById('badge-total-tools')) document.getElementById('badge-total-tools').textContent = kpis.totalTools || 0;
       if (document.getElementById('badge-active-rentals')) document.getElementById('badge-active-rentals').textContent = kpis.activeRentals || 0;
       if (document.getElementById('badge-total-maintenance')) document.getElementById('badge-total-maintenance').textContent = kpis.underMaintenance || 0;
@@ -1706,51 +1715,7 @@ async function loadMyLeases() {
 }
 
 function renderCustomerPortalTable(leases) {
-  const tbody = document.getElementById('tbody-customer-leases');
-  tbody.innerHTML = '';
-
-  if (!leases || leases.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="8" class="text-center py-5">You have no equipment leases on file. Visit the Storefront Catalog to rent tools.</td></tr>`;
-    return;
-  }
-
-  leases.forEach((r) => {
-    const tr = document.createElement('tr');
-    const statusBadge = getStatusBadge(r.status);
-    const toolDetails = r.tool
-      ? `<strong>${r.tool.name}</strong><br><small class="text-muted">Item Code: ${r.tool.serialNumber}</small>`
-      : 'Equipment';
-
-    const deliveryTag = r.deliveryMode === 'Site Delivery'
-      ? `<span class="badge" style="background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe;"><i class="fa-solid fa-truck"></i> Site Delivery</span>`
-      : `<span class="badge" style="background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0;"><i class="fa-solid fa-shop"></i> Self-Pickup</span>`;
-
-    tr.innerHTML = `
-      <td><strong class="text-gold">${r.rentalCode}</strong></td>
-      <td>${toolDetails}</td>
-      <td>
-        <div><strong>Due:</strong> ${formatDate(r.dueDate)}</div>
-        <small class="text-muted">Start: ${formatDate(r.startDate)}</small>
-      </td>
-      <td>${deliveryTag}</td>
-      <td><strong>${formatLKR(r.totalAmount)}</strong></td>
-      <td><span class="badge badge-active">${r.depositStatus}</span></td>
-      <td>${statusBadge}</td>
-      <td>
-        <div style="display:flex; gap:6px;">
-          ${
-            r.status !== 'Completed'
-              ? `<button class="btn btn-sm btn-outline btn-cta" onclick="openExtendModal('${r._id}')"><i class="fa-solid fa-calendar-plus"></i> Extend</button>`
-              : ''
-          }
-          <a href="${API_BASE}/rentals/${r._id}/pdf" target="_blank" class="btn btn-sm btn-gold btn-cta">
-            <i class="fa-solid fa-file-pdf"></i> Download PDF
-          </a>
-        </div>
-      </td>
-    `;
-    tbody.appendChild(tr);
-  });
+  renderCustomerLeasesTable(leases);
 }
 
 // ----------------------------------------------------
@@ -1802,13 +1767,20 @@ function renderPaymentsTable(payments) {
 
     const tr = document.createElement('tr');
     const agreementCode = r ? r.rentalCode || 'LE-RENT-XXXX' : 'N/A';
-    const payerName = p.user_id ? p.user_id.name : 'Contractor';
+    const payerName = p.customer_id ? p.customer_id.name : (p.user_id ? p.user_id.name : 'Contractor');
+    const payerNic = p.customer_nic || (p.customer_id ? p.customer_id.nicOrPassport : (p.user_id ? p.user_id.nic_or_passport : ''));
 
     tr.innerHTML = `
       <td><strong class="text-gold">${p.transaction_ref}</strong></td>
       <td><strong>${agreementCode}</strong></td>
-      <td>${payerName}</td>
-      <td><span class="badge" style="background:#f1f5f9; color:#334155; border:1px solid #e2e8f0;">${p.payment_type}</span></td>
+      <td>
+        <strong style="color:#0f172a;">${payerName}</strong>
+        ${payerNic ? `<br><span style="font-family:monospace; font-size:11px; color:#64748b;">NIC: ${payerNic}</span>` : ''}
+      </td>
+      <td>
+        <span class="badge" style="background:#f1f5f9; color:#334155; border:1px solid #e2e8f0; font-weight:700;">${p.payment_type}</span>
+        ${p.notes ? `<br><small class="text-muted" style="font-size:10.5px;">${p.notes}</small>` : ''}
+      </td>
       <td>${p.payment_method}</td>
       <td><strong class="text-success">${formatLKR(p.amount)}</strong></td>
       <td>${depStatusBadge}</td>
@@ -1834,11 +1806,25 @@ let currentKycUser = null;
 
 async function loadUsers() {
   try {
-    const res = await authFetch(`${API_BASE}/auth/users`);
-    const json = await res.json();
+    const [usersRes, custsRes] = await Promise.all([
+      authFetch(`${API_BASE}/auth/users`).then((r) => r.json()),
+      authFetch(`${API_BASE}/customers`).then((r) => r.json()).catch(() => ({ success: false })),
+    ]);
 
-    if (json.success) {
-      state.users = json.data;
+    if (usersRes.success) {
+      const custs = custsRes.success ? custsRes.data : [];
+      state.users = usersRes.data.map((u) => {
+        const matchingCust = custs.find(
+          (c) => (c.nicOrPassport && u.nic_or_passport && c.nicOrPassport.toUpperCase() === u.nic_or_passport.toUpperCase()) ||
+                 (c.email && u.email && c.email.toLowerCase() === u.email.toLowerCase()) ||
+                 (c._id === u._id)
+        );
+        return {
+          ...u,
+          outstandingBalance: matchingCust ? (matchingCust.outstandingBalance || 0) : (u.outstandingBalance || 0),
+        };
+      });
+
       document.getElementById('badge-total-users').textContent = state.users.length;
       renderUsersTable(state.users);
     }
@@ -1852,7 +1838,7 @@ function renderUsersTable(users) {
   tbody.innerHTML = '';
 
   if (!users || users.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="9" class="text-center py-5">No registered contractors or users found.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8" class="text-center py-5">No registered contractors or users found.</td></tr>`;
     return;
   }
 
@@ -1863,25 +1849,41 @@ function renderUsersTable(users) {
       ? `<span class="badge badge-active">Verified</span>`
       : `<span class="badge badge-maintenance">Pending</span>`;
 
+    const outBal = u.outstandingBalance || 0;
+    const debtBadge = outBal > 0
+      ? `<span class="badge badge-warning" style="background:#fff1f2; color:#be123c; border:1px solid #fecdd3; font-weight:800; font-size:12px;">${formatLKR(outBal)} DUE</span>`
+      : `<span class="badge badge-active" style="background:#ecfdf5; color:#059669; border:1px solid #a7f3d0;"><i class="fa-solid fa-check"></i> Clear</span>`;
+
+    const nicVal = u.nic_or_passport || 'N/A';
+
     tr.innerHTML = `
-      <td><strong style="color:#0f172a;">${u.name}</strong></td>
-      <td>${roleBadge}</td>
-      <td>${u.email}</td>
-      <td>${u.phone_number}</td>
-      <td><strong class="text-gold">${u.nic_or_passport}</strong></td>
-      <td>${u.company_name || 'Individual Contractor'}</td>
       <td>
-        <button class="btn btn-xs btn-outline btn-cta" onclick="openKycPreviewModal('${u._id}')" title="Preview Uploaded NIC / Passport">
-          <i class="fa-solid fa-id-card text-gold"></i> Preview Doc
-        </button>
+        <strong style="color:#0f172a;">${u.name}</strong>
+        ${nicVal !== 'N/A' ? `<br><a href="javascript:void(0)" onclick="openCustomerProfileModal('${nicVal}')" style="font-size:11px; color:#d97706; text-decoration:underline;">View Ledger</a>` : ''}
       </td>
+      <td>${roleBadge}</td>
+      <td><strong class="text-gold" style="font-family:monospace;">${nicVal}</strong></td>
+      <td>
+        <div style="font-weight:600; color:#334155;">${u.phone_number || 'N/A'}</div>
+        <div class="text-muted" style="font-size:11px;">${u.email}</div>
+      </td>
+      <td>${u.company_name || 'Individual Contractor'}</td>
+      <td>${debtBadge}</td>
       <td>${kycBadge}</td>
       <td>
-        ${
-          u.verification_status !== 'Verified'
-            ? `<button class="btn btn-sm btn-success btn-cta" onclick="verifyUserKyc('${u._id}')"><i class="fa-solid fa-check"></i> Approve KYC</button>`
-            : `<button class="btn btn-sm btn-outline" disabled><i class="fa-solid fa-circle-check text-success"></i> Approved</button>`
-        }
+        <div class="action-btn-group">
+          <button class="btn btn-xs btn-outline btn-cta" onclick="openCustomerProfileModal('${nicVal !== 'N/A' ? nicVal : u._id}')" title="View Customer Profile & Debt Ledger">
+            <i class="fa-solid fa-address-card text-gold"></i> Ledger
+          </button>
+          <button class="btn btn-xs btn-outline btn-cta" onclick="openKycPreviewModal('${u._id}')" title="Preview Uploaded NIC / Passport">
+            <i class="fa-solid fa-id-card"></i> Doc
+          </button>
+          ${
+            u.verification_status !== 'Verified'
+              ? `<button class="btn btn-xs btn-success btn-cta" onclick="verifyUserKyc('${u._id}')"><i class="fa-solid fa-check"></i> Approve</button>`
+              : ''
+          }
+        </div>
       </td>
     `;
     tbody.appendChild(tr);
@@ -2393,7 +2395,7 @@ function renderRentalsTable(rentals) {
   tbody.innerHTML = '';
 
   if (!rentals || rentals.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="11" class="text-center py-5">No agreements found.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="10" class="text-center py-5">No agreements found.</td></tr>`;
     return;
   }
 
@@ -2406,31 +2408,41 @@ function renderRentalsTable(rentals) {
 
     const clientName = r.user_id ? r.user_id.name : r.customer ? r.customer.name : 'Contractor';
     const clientPhone = r.user_id ? r.user_id.phone_number : r.customer ? r.customer.phone : 'N/A';
-    const clientNic = r.user_id ? r.user_id.nic_or_passport : r.customer ? r.customer.nicOrPassport : 'N/A';
+    const clientNic = r.customer_nic || (r.customer && r.customer.nicOrPassport) || (r.user_id && r.user_id.nic_or_passport) || 'N/A';
 
-    const deliveryTag = r.deliveryMode === 'Site Delivery'
-      ? `<span class="badge" style="background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe;"><i class="fa-solid fa-truck"></i> Site Delivery</span>`
-      : `<span class="badge" style="background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0;"><i class="fa-solid fa-shop"></i> Self-Pickup</span>`;
+    const balDue = r.balanceDue !== undefined ? r.balanceDue : Math.max(0, (r.totalAmount || 0) - (r.paidAmount || 0));
+    const balBadge = balDue > 0
+      ? `<span class="badge badge-warning" style="background:#fff7ed; color:#c2410c; border:1px solid #fed7aa; font-weight:800;">${formatLKR(balDue)} DUE</span>`
+      : `<span class="badge badge-active" style="background:#ecfdf5; color:#059669; border:1px solid #a7f3d0;"><i class="fa-solid fa-check"></i> PAID</span>`;
 
     tr.innerHTML = `
       <td><strong class="text-gold" style="font-size:13px;">${r.rentalCode}</strong></td>
-      <td><strong style="color:#0f172a;">${clientName}</strong></td>
       <td>
-        <div style="font-weight:600; color:#334155;">${clientPhone}</div>
-        <div class="text-muted" style="font-size:11px;">NIC: ${clientNic}</div>
+        <strong style="color:#0f172a;">${clientName}</strong>
+        ${clientNic !== 'N/A' ? `<br><a href="javascript:void(0)" onclick="openCustomerProfileModal('${clientNic}')" style="font-size:11px; color:#d97706; text-decoration:underline;">View Ledger</a>` : ''}
+      </td>
+      <td>
+        <div style="font-family:monospace; font-weight:700; color:#0f172a; font-size:12px;">${clientNic}</div>
+        <div class="text-muted" style="font-size:11px;">${clientPhone}</div>
       </td>
       <td>${toolDetails}</td>
       <td>
         <div style="font-size:12px; color:#475569;"><strong>Start:</strong> ${formatDate(r.startDate)}</div>
         <div style="font-size:12px;" class="${r.status === 'Overdue' ? 'text-danger font-bold' : ''}"><strong>Due:</strong> ${formatDate(r.dueDate)}</div>
       </td>
-      <td>${deliveryTag}</td>
-      <td><strong class="text-gold">${formatLKR(r.depositAmount)}</strong></td>
-      <td>${formatLKR(r.rentAmount)} <br><small class="text-muted">(${r.rateTypeApplied || 'Daily'})</small></td>
       <td><strong style="color:#0f172a; font-size:13.5px;">${formatLKR(r.totalAmount)}</strong></td>
+      <td><strong class="text-success" style="font-size:13px;">${formatLKR(r.paidAmount || 0)}</strong></td>
+      <td>${balBadge}</td>
       <td>${statusBadge}</td>
       <td>
         <div class="action-btn-group">
+          ${
+            balDue > 0
+              ? `<button class="btn btn-xs btn-primary btn-cta" onclick="openSettleBalanceModal('${r._id}')" title="Settle Outstanding Due Balance" style="background:#d97706; border-color:#b45309; color:#fff;">
+                   <i class="fa-solid fa-hand-holding-dollar"></i> Settle Due
+                 </button>`
+              : ''
+          }
           ${
             r.status !== 'Completed'
               ? `<button class="btn btn-xs btn-outline btn-cta" onclick="openDispatchModal('${r._id}')" title="Yard Staff Dispatch & Meter Inspection"><i class="fa-solid fa-truck-ramp-box text-gold"></i> Dispatch</button>
@@ -2575,6 +2587,172 @@ function updateSelectedToolSummaryCard(toolId) {
   card.style.display = 'flex';
 }
 
+// ----------------------------------------------------
+// 12. RENTAL BOOKING & AGREEMENT WIZARD
+// ----------------------------------------------------
+let rentWizardStep = 1;
+let currentRentalPayMode = 'full';
+let currentRentalCustDebt = 0;
+let currentRentalCustNic = '';
+let nicLookupTimeout = null;
+
+function setRentWizardStep(step) {
+  rentWizardStep = step;
+
+  for (let i = 1; i <= 3; i++) {
+    const ind = document.getElementById(`rent-step-ind-${i}`);
+    const pane = document.getElementById(`rent-pane-${i}`);
+    if (ind) ind.classList.toggle('active', i === step);
+    if (pane) pane.classList.toggle('active', i === step);
+  }
+
+  const btnPrev = document.getElementById('btn-rent-prev');
+  const btnNext = document.getElementById('btn-rent-next');
+  const btnSubmit = document.getElementById('btn-submit-rental');
+
+  btnPrev.style.display = step > 1 ? 'inline-flex' : 'none';
+  btnNext.style.display = step < 3 ? 'inline-flex' : 'none';
+  btnSubmit.style.display = step === 3 ? 'inline-flex' : 'none';
+
+  if (step === 3) recalculateRentalTotal();
+}
+
+function setRentalPaymentMode(mode) {
+  currentRentalPayMode = mode;
+  document.querySelectorAll('.pay-opt-chip').forEach((c) => {
+    if (c.id && c.id.startsWith('chip-pay-')) c.classList.remove('active');
+  });
+
+  const activeChip = document.getElementById(`chip-pay-${mode}`);
+  if (activeChip) activeChip.classList.add('active');
+
+  const partialGroup = document.getElementById('rental-partial-amount-group');
+  if (partialGroup) {
+    partialGroup.style.display = (mode === 'partial' || mode === 'later') ? 'block' : 'none';
+  }
+
+  const input = document.getElementById('rental-partial-pay-input');
+  if (mode === 'later' && input) {
+    input.value = 0;
+  } else if (mode === 'full' && input) {
+    input.value = '';
+  }
+
+  recalculateRentalTotal();
+}
+
+function setQuickPartial(type) {
+  const opt = document.getElementById('rental-tool-select').selectedOptions[0];
+  const deposit = opt ? Number(opt.dataset.deposit) || 0 : 0;
+  const grandTotal = Number(document.getElementById('calc-total-amount').dataset.val) || 0;
+  const input = document.getElementById('rental-partial-pay-input');
+
+  if (type === 'deposit') {
+    if (input) input.value = deposit;
+  } else if (type === '50') {
+    if (input) input.value = Math.round(grandTotal * 0.5);
+  }
+  recalculateRentalTotal();
+}
+
+async function handleRentalCustomerSelect(selectedUserId) {
+  if (!selectedUserId) {
+    currentRentalCustDebt = 0;
+    currentRentalCustNic = '';
+    const alertBox = document.getElementById('rental-customer-debt-alert');
+    if (alertBox) alertBox.style.display = 'none';
+    const nicInput = document.getElementById('rental-customer-nic');
+    if (nicInput) nicInput.value = '';
+    recalculateRentalTotal();
+    return;
+  }
+
+  const user = state.users && state.users.find((u) => u._id === selectedUserId);
+  const nic = user ? (user.nic_or_passport || '') : '';
+  const nicInput = document.getElementById('rental-customer-nic');
+  if (nicInput && nic) nicInput.value = nic;
+
+  if (nic) {
+    await checkCustomerDebtByNic(nic);
+  } else {
+    currentRentalCustDebt = 0;
+    const alertBox = document.getElementById('rental-customer-debt-alert');
+    if (alertBox) alertBox.style.display = 'none';
+  }
+  recalculateRentalTotal();
+}
+
+function handleRentalNicInput(val) {
+  clearTimeout(nicLookupTimeout);
+  const clean = val.trim().toUpperCase();
+  const statusEl = document.getElementById('rental-nic-lookup-status');
+
+  if (!clean || clean.length < 4) {
+    if (statusEl) statusEl.innerHTML = '';
+    const alertBox = document.getElementById('rental-customer-debt-alert');
+    if (alertBox) alertBox.style.display = 'none';
+    currentRentalCustDebt = 0;
+    currentRentalCustNic = clean;
+    recalculateRentalTotal();
+    return;
+  }
+
+  if (statusEl) statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-gold"></i>`;
+
+  nicLookupTimeout = setTimeout(async () => {
+    await checkCustomerDebtByNic(clean);
+  }, 350);
+}
+
+async function checkCustomerDebtByNic(nic) {
+  const clean = nic.trim().toUpperCase();
+  currentRentalCustNic = clean;
+  const statusEl = document.getElementById('rental-nic-lookup-status');
+  const alertBox = document.getElementById('rental-customer-debt-alert');
+  const debtAmtEl = document.getElementById('rental-cust-debt-amount');
+  const debtNicEl = document.getElementById('rental-cust-debt-nic');
+
+  try {
+    const res = await fetch(`${API_BASE}/customers/by-nic/${encodeURIComponent(clean)}`);
+    const json = await res.json();
+
+    if (json.success && json.data) {
+      if (statusEl) statusEl.innerHTML = `<i class="fa-solid fa-circle-check text-success" title="Customer record verified"></i>`;
+
+      const cust = json.data.customer;
+      currentRentalCustDebt = json.data.outstandingBalance || 0;
+
+      // Select in dropdown if found
+      const custSelect = document.getElementById('rental-customer-select');
+      if (custSelect && cust) {
+        for (let i = 0; i < custSelect.options.length; i++) {
+          if (custSelect.options[i].text.includes(clean) || custSelect.options[i].value === cust._id) {
+            custSelect.selectedIndex = i;
+            break;
+          }
+        }
+      }
+
+      if (currentRentalCustDebt > 0) {
+        if (alertBox) alertBox.style.display = 'flex';
+        if (debtAmtEl) debtAmtEl.textContent = formatLKR(currentRentalCustDebt);
+        if (debtNicEl) debtNicEl.textContent = clean;
+      } else {
+        if (alertBox) alertBox.style.display = 'none';
+      }
+    } else {
+      if (statusEl) statusEl.innerHTML = `<span class="badge" style="background:#f1f5f9; color:#64748b; font-size:10px;">New NIC</span>`;
+      if (alertBox) alertBox.style.display = 'none';
+      currentRentalCustDebt = 0;
+    }
+  } catch (err) {
+    if (statusEl) statusEl.innerHTML = '';
+    if (alertBox) alertBox.style.display = 'none';
+    currentRentalCustDebt = 0;
+  }
+  recalculateRentalTotal();
+}
+
 async function prepareNewRentalModal(preselectedCustId = null, preselectedToolId = null) {
   const [toolsRes, usersRes] = await Promise.all([
     authFetch(`${API_BASE}/tools/available`).then((r) => r.json()),
@@ -2583,6 +2761,7 @@ async function prepareNewRentalModal(preselectedCustId = null, preselectedToolId
 
   state.availableTools = toolsRes.success ? toolsRes.data : [];
   const users = usersRes.success ? usersRes.data : [];
+  state.users = users;
 
   const custSelect = document.getElementById('rental-customer-select');
   if (custSelect) {
@@ -2590,7 +2769,7 @@ async function prepareNewRentalModal(preselectedCustId = null, preselectedToolId
     users.forEach((u) => {
       const opt = document.createElement('option');
       opt.value = u._id;
-      opt.textContent = `${u.name} (${u.company_name || 'Contractor'} - ${u.phone_number})`;
+      opt.textContent = `${u.name} (${u.nic_or_passport || 'No NIC'} - ${u.phone_number})`;
       if (preselectedCustId && u._id === preselectedCustId) opt.selected = true;
       custSelect.appendChild(opt);
     });
@@ -2621,6 +2800,19 @@ async function prepareNewRentalModal(preselectedCustId = null, preselectedToolId
   document.getElementById('rental-delivery-mode').value = 'Store Pickup';
   document.getElementById('availability-feedback').style.display = 'none';
 
+  if (currentUser && currentUser.role === 'customer') {
+    const nicInput = document.getElementById('rental-customer-nic');
+    if (nicInput) nicInput.value = currentUser.nic_or_passport || '';
+    if (currentUser.nic_or_passport) checkCustomerDebtByNic(currentUser.nic_or_passport);
+  } else if (preselectedCustId) {
+    handleRentalCustomerSelect(preselectedCustId);
+  } else {
+    currentRentalCustDebt = 0;
+    currentRentalCustNic = '';
+    const alertBox = document.getElementById('rental-customer-debt-alert');
+    if (alertBox) alertBox.style.display = 'none';
+  }
+
   if (preselectedToolId) {
     updateSelectedToolSummaryCard(preselectedToolId);
   } else {
@@ -2628,6 +2820,7 @@ async function prepareNewRentalModal(preselectedCustId = null, preselectedToolId
     if (card) card.style.display = 'none';
   }
 
+  setRentalPaymentMode('full');
   setRentWizardStep(1);
   recalculateRentalTotal();
   openModal('modal-rental');
@@ -2698,7 +2891,38 @@ function recalculateRentalTotal() {
   document.getElementById('calc-rent-amount').textContent = formatLKR(rentAmount);
   document.getElementById('calc-delivery-fee').textContent = formatLKR(deliveryFee);
   document.getElementById('calc-deposit-amount').textContent = formatLKR(deposit);
-  document.getElementById('calc-total-amount').textContent = formatLKR(grandTotal);
+  
+  const totalAmountEl = document.getElementById('calc-total-amount');
+  totalAmountEl.textContent = formatLKR(grandTotal);
+  totalAmountEl.dataset.val = grandTotal;
+
+  // Calculate payment split based on mode
+  let payingNow = grandTotal;
+  const partialInput = document.getElementById('rental-partial-pay-input');
+
+  if (currentRentalPayMode === 'full') {
+    payingNow = grandTotal;
+  } else if (currentRentalPayMode === 'later') {
+    payingNow = 0;
+  } else if (currentRentalPayMode === 'partial') {
+    if (partialInput && partialInput.value !== '') {
+      payingNow = Math.max(0, Math.min(grandTotal, Number(partialInput.value)));
+    } else {
+      payingNow = deposit > 0 ? deposit : Math.round(grandTotal * 0.5);
+      if (partialInput) partialInput.value = payingNow;
+    }
+  }
+
+  const billBalanceDue = Math.max(0, grandTotal - payingNow);
+  const totalPostBalance = currentRentalCustDebt + billBalanceDue;
+
+  const payingNowEl = document.getElementById('calc-paying-now');
+  const billBalDueEl = document.getElementById('calc-bill-balance-due');
+  const custPostBalEl = document.getElementById('calc-customer-post-balance');
+
+  if (payingNowEl) payingNowEl.textContent = formatLKR(payingNow);
+  if (billBalDueEl) billBalDueEl.textContent = formatLKR(billBalanceDue);
+  if (custPostBalEl) custPostBalEl.textContent = `${formatLKR(totalPostBalance)} (Prior: ${formatLKR(currentRentalCustDebt)} + New: ${formatLKR(billBalanceDue)})`;
 }
 
 // ----------------------------------------------------
@@ -2798,13 +3022,16 @@ function removeReturnPhoto() {
   if (previewWrap) previewWrap.style.display = 'none';
 }
 
-// Submit Agreement (Customer Booking Flow - No Manual URLs, No Yard Meter)
+// Submit Agreement (Customer Booking Flow - Supports Partial Payments & NIC Tracking)
 document.getElementById('form-rental').addEventListener('submit', async (e) => {
   e.preventDefault();
 
   let customerId = currentUser ? currentUser._id : null;
   const custSelect = document.getElementById('rental-customer-select');
   if (custSelect && custSelect.value) customerId = custSelect.value;
+
+  const nicInput = document.getElementById('rental-customer-nic');
+  const customerNic = (nicInput ? nicInput.value.trim().toUpperCase() : '') || currentRentalCustNic || (currentUser ? currentUser.nic_or_passport : '');
 
   const toolId = document.getElementById('rental-tool-select').value;
   const startDate = document.getElementById('rental-start-date').value;
@@ -2814,9 +3041,25 @@ document.getElementById('form-rental').addEventListener('submit', async (e) => {
   const deliveryFee = deliveryMode === 'Site Delivery' ? 3500 : 0;
   const digitalSignature = getSignatureDataUrl();
 
+  const grandTotal = Number(document.getElementById('calc-total-amount').dataset.val) || 0;
+  let paidAmount = grandTotal;
+  const partialInput = document.getElementById('rental-partial-pay-input');
+
+  if (currentRentalPayMode === 'full') {
+    paidAmount = grandTotal;
+  } else if (currentRentalPayMode === 'later') {
+    paidAmount = 0;
+  } else if (currentRentalPayMode === 'partial') {
+    paidAmount = partialInput ? Math.max(0, Number(partialInput.value) || 0) : grandTotal;
+  }
+
+  const payMethodRadio = document.querySelector('input[name="pay-method"]:checked');
+  const paymentMethod = payMethodRadio ? payMethodRadio.value : 'Gateway';
+
   const payload = {
     userId: customerId,
     customerId,
+    customerNic,
     toolId,
     startDate,
     dueDate,
@@ -2824,9 +3067,10 @@ document.getElementById('form-rental').addEventListener('submit', async (e) => {
     deliveryMode,
     deliveryFee,
     deliveryAddress: siteLocation,
+    paidAmount,
+    paymentMethod,
     kycDocumentUrl: uploadedKycDocData || '',
     digitalSignature,
-    paymentStatus: 'Paid',
     notes: 'Executed via Lions Engineering customer portal',
   };
 
@@ -2839,7 +3083,7 @@ document.getElementById('form-rental').addEventListener('submit', async (e) => {
 
     const json = await res.json();
     if (json.success) {
-      showToast('Agreement booked, KYC registered & payment completed!', 'success');
+      showToast(json.message || 'Agreement booked, KYC registered & payment processed!', 'success');
       closeModal('modal-rental');
       removeKycFile();
 
@@ -2849,6 +3093,8 @@ document.getElementById('form-rental').addEventListener('submit', async (e) => {
         loadRentals();
         loadDashboard();
         loadTools();
+        loadPayments();
+        loadUsers();
       }
 
       openInvoiceModal(json.data._id);
@@ -2980,6 +3226,10 @@ async function openReturnModal(rentalId) {
         ? `Equipment: ${r.tool.name} (Item Code: ${r.tool.serialNumber}) | Starting Meter: ${r.startMeterReading || 0} Hrs`
         : 'Tool details';
 
+      const custNic = r.customer_nic || (r.customer && r.customer.nicOrPassport) || (r.user_id && r.user_id.nic_or_passport) || 'N/A';
+      const nicDisplayEl = document.getElementById('return-customer-nic-display');
+      if (nicDisplayEl) nicDisplayEl.textContent = custNic;
+
       const todayStr = new Date().toISOString().split('T')[0];
       document.getElementById('return-actual-date').value = todayStr;
 
@@ -2998,6 +3248,9 @@ async function openReturnModal(rentalId) {
       removeReturnPhoto();
       document.getElementById('return-tool-status').value = 'Available';
       if (r.tool) document.getElementById('return-tool-condition').value = r.tool.condition || 'Good';
+
+      const payReceivedInput = document.getElementById('return-payment-received');
+      if (payReceivedInput) payReceivedInput.value = '';
 
       setReturnWizardStep(1);
       updateSettlementCalculation();
@@ -3043,6 +3296,56 @@ function updateSettlementCalculation() {
 
   if (depStatusEl) depStatusEl.textContent = depositStatusText;
   if (netRefundEl) netRefundEl.textContent = formatLKR(Math.max(0, net));
+
+  // Calculate updated contract bill and return desk payments
+  const baseRent = currentReturnRental.rentAmount || 0;
+  const deliveryFee = currentReturnRental.deliveryFee || 0;
+  const updatedTotalBill = baseRent + deposit + deliveryFee + lateFee + damage + excessMeterFee;
+  const totalPaidToDate = currentReturnRental.paidAmount || 0;
+  const netClosureDue = Math.max(0, updatedTotalBill - totalPaidToDate);
+
+  const totalBillValEl = document.getElementById('return-total-bill-val');
+  const totalPaidValEl = document.getElementById('return-total-paid-val');
+  const netSettleDueEl = document.getElementById('return-net-settle-due');
+
+  if (totalBillValEl) totalBillValEl.textContent = formatLKR(updatedTotalBill);
+  if (totalPaidValEl) totalPaidValEl.textContent = formatLKR(totalPaidToDate);
+  if (netSettleDueEl) {
+    netSettleDueEl.textContent = formatLKR(netClosureDue);
+    netSettleDueEl.dataset.due = netClosureDue;
+  }
+
+  const payReceivedInput = document.getElementById('return-payment-received');
+  let returnPaymentReceived = 0;
+  if (payReceivedInput && payReceivedInput.value !== '') {
+    returnPaymentReceived = Number(payReceivedInput.value) || 0;
+  }
+
+  const finalRemainingBalance = Math.max(0, updatedTotalBill - (totalPaidToDate + returnPaymentReceived));
+  const finalBalDisplay = document.getElementById('return-final-balance-due-display');
+  if (finalBalDisplay) {
+    if (finalRemainingBalance > 0) {
+      finalBalDisplay.className = 'text-danger font-bold';
+      finalBalDisplay.textContent = `${formatLKR(finalRemainingBalance)} DUE (Tracked on NIC)`;
+    } else {
+      finalBalDisplay.className = 'text-success font-bold';
+      finalBalDisplay.textContent = `LKR 0 (SETTLED IN FULL)`;
+    }
+  }
+}
+
+function setReturnPayFull() {
+  const netSettleDueEl = document.getElementById('return-net-settle-due');
+  const due = Number(netSettleDueEl ? netSettleDueEl.dataset.due : 0) || 0;
+  const input = document.getElementById('return-payment-received');
+  if (input) input.value = due;
+  updateSettlementCalculation();
+}
+
+function setReturnPayZero() {
+  const input = document.getElementById('return-payment-received');
+  if (input) input.value = 0;
+  updateSettlementCalculation();
 }
 
 document.getElementById('return-late-fee').addEventListener('input', updateSettlementCalculation);
@@ -3061,6 +3364,11 @@ document.getElementById('form-return').addEventListener('submit', async (e) => {
   const postReturnToolCondition = document.getElementById('return-tool-condition').value;
   const damageNotes = document.getElementById('return-damage-notes').value.trim();
 
+  const payReceivedInput = document.getElementById('return-payment-received');
+  const returnPaymentAmount = payReceivedInput && payReceivedInput.value !== '' ? Number(payReceivedInput.value) || 0 : undefined;
+  const returnPaymentMethod = document.getElementById('return-payment-method') ? document.getElementById('return-payment-method').value : 'Cash';
+  const returnPaymentNotes = document.getElementById('return-payment-notes') ? document.getElementById('return-payment-notes').value.trim() : '';
+
   const payload = {
     actualReturnDate,
     lateFee,
@@ -3069,6 +3377,9 @@ document.getElementById('form-return').addEventListener('submit', async (e) => {
     postReturnToolStatus,
     postReturnToolCondition,
     damageNotes,
+    returnPaymentAmount,
+    returnPaymentMethod,
+    returnPaymentNotes,
     postReturnPhotos: uploadedReturnPhotoData ? [uploadedReturnPhotoData] : [],
   };
 
@@ -3081,13 +3392,17 @@ document.getElementById('form-return').addEventListener('submit', async (e) => {
 
     const json = await res.json();
     if (json.success) {
-      showToast(json.message || 'Tool returned & deposit settled successfully!', 'success');
+      const msg = json.data && json.data.balanceDue > 0
+        ? `Bill finalized! Outstanding balance of ${formatLKR(json.data.balanceDue)} logged to customer NIC.`
+        : 'Bill finalized and settled in full!';
+      showToast(msg, 'success');
       closeModal('modal-return');
       removeReturnPhoto();
       loadRentals();
       loadDashboard();
       loadTools();
       loadPayments();
+      loadUsers();
     } else {
       showToast(json.message || json.error || 'Failed to process return', 'error');
     }
@@ -3095,6 +3410,187 @@ document.getElementById('form-return').addEventListener('submit', async (e) => {
     showToast('Error processing tool return', 'error');
   }
 });
+
+// ----------------------------------------------------
+// 13.5. SETTLE OUTSTANDING BALANCE MODAL & HANDLERS
+// ----------------------------------------------------
+let currentSettleRental = null;
+
+async function openSettleBalanceModal(rentalId) {
+  try {
+    const res = await authFetch(`${API_BASE}/rentals/${rentalId}`);
+    const json = await res.json();
+
+    if (!json.success || !json.data) {
+      showToast('Could not load rental for settlement', 'error');
+      return;
+    }
+
+    currentSettleRental = json.data;
+    const r = currentSettleRental;
+    const clientName = r.user_id ? r.user_id.name : r.customer ? r.customer.name : 'Contractor';
+    const clientNic = r.customer_nic || (r.customer && r.customer.nicOrPassport) || (r.user_id && r.user_id.nic_or_passport) || 'N/A';
+
+    document.getElementById('settle-rental-id').value = r._id;
+    document.getElementById('settle-modal-rental-code').textContent = r.rentalCode;
+    document.getElementById('settle-modal-client-info').textContent = `Customer: ${clientName} | NIC: ${clientNic}`;
+    document.getElementById('settle-modal-total-bill').textContent = formatLKR(r.totalAmount);
+    document.getElementById('settle-modal-paid-amt').textContent = formatLKR(r.paidAmount || 0);
+    
+    const balanceDue = r.balanceDue || Math.max(0, r.totalAmount - (r.paidAmount || 0));
+    const balDueEl = document.getElementById('settle-modal-balance-due');
+    balDueEl.textContent = formatLKR(balanceDue);
+    balDueEl.dataset.due = balanceDue;
+
+    const badgeEl = document.getElementById('settle-modal-due-badge');
+    if (badgeEl) badgeEl.textContent = `${formatLKR(balanceDue)} DUE`;
+
+    const amountInput = document.getElementById('settle-amount-input');
+    if (amountInput) {
+      amountInput.value = balanceDue;
+      amountInput.max = balanceDue;
+    }
+
+    openModal('modal-settle-balance');
+  } catch (err) {
+    showToast('Failed to open settlement modal', 'error');
+  }
+}
+
+function setSettleFullAmount() {
+  const balDueEl = document.getElementById('settle-modal-balance-due');
+  const due = Number(balDueEl ? balDueEl.dataset.due : 0) || 0;
+  const amountInput = document.getElementById('settle-amount-input');
+  if (amountInput) amountInput.value = due;
+}
+
+const formSettle = document.getElementById('form-settle-balance');
+if (formSettle) {
+  formSettle.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const rentalId = document.getElementById('settle-rental-id').value;
+    const amount = Number(document.getElementById('settle-amount-input').value) || 0;
+    const paymentMethod = document.getElementById('settle-payment-method').value;
+    const notes = document.getElementById('settle-payment-notes').value.trim();
+
+    if (amount <= 0) {
+      showToast('Please enter a valid settlement amount', 'error');
+      return;
+    }
+
+    try {
+      const res = await authFetch(`${API_BASE}/rentals/${rentalId}/settle-balance`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount, paymentMethod, notes }),
+      });
+
+      const json = await res.json();
+      if (json.success) {
+        showToast(json.message || 'Payment recorded and balance updated successfully!', 'success');
+        closeModal('modal-settle-balance');
+        loadRentals();
+        loadPayments();
+        loadDashboard();
+        loadUsers();
+        if (currentUser && currentUser.role === 'customer') loadCustomerPortal();
+      } else {
+        showToast(json.message || json.error || 'Failed to record settlement', 'error');
+      }
+    } catch (err) {
+      showToast('Error recording settlement payment', 'error');
+    }
+  });
+}
+
+// ----------------------------------------------------
+// 13.6. CUSTOMER PROFILE & DEBT LEDGER MODAL
+// ----------------------------------------------------
+async function openCustomerProfileModal(customerIdOrNic) {
+  try {
+    let url = `${API_BASE}/customers/${customerIdOrNic}`;
+    // If it looks like a NIC (numeric or alphanumeric > 8 chars and not 24 char hex ObjectId)
+    if (typeof customerIdOrNic === 'string' && customerIdOrNic.length >= 8 && customerIdOrNic.length <= 15 && !customerIdOrNic.match(/^[0-9a-fA-F]{24}$/)) {
+      url = `${API_BASE}/customers/by-nic/${encodeURIComponent(customerIdOrNic)}`;
+    }
+
+    const res = await authFetch(url);
+    const json = await res.json();
+
+    if (!json.success || !json.data) {
+      showToast('Customer record not found', 'error');
+      return;
+    }
+
+    const cust = json.data.customer || json.data;
+    const rentals = json.data.rentals || [];
+    const outstanding = json.data.outstandingBalance !== undefined ? json.data.outstandingBalance : (cust.outstandingBalance || 0);
+
+    document.getElementById('cust-prof-name').textContent = cust.name || 'Contractor Profile';
+    document.getElementById('cust-prof-role').textContent = (cust.role || 'CUSTOMER').toUpperCase();
+    document.getElementById('cust-prof-company').textContent = cust.companyName || cust.company_name || 'Individual Contractor';
+    document.getElementById('cust-prof-nic').textContent = cust.nicOrPassport || cust.nic_or_passport || 'N/A';
+    document.getElementById('cust-prof-phone').textContent = cust.phone || cust.phone_number || 'N/A';
+    document.getElementById('cust-prof-email').textContent = cust.email || 'N/A';
+    document.getElementById('cust-prof-address').textContent = cust.address || 'Sri Lanka';
+
+    const totalBilled = rentals.reduce((sum, r) => sum + (r.totalAmount || 0), 0);
+    const totalPaid = rentals.reduce((sum, r) => sum + (r.paidAmount || 0), 0);
+
+    document.getElementById('cust-prof-total-billed').textContent = formatLKR(totalBilled);
+    document.getElementById('cust-prof-total-paid').textContent = formatLKR(totalPaid);
+    
+    const balDueEl = document.getElementById('cust-prof-balance-due');
+    balDueEl.textContent = formatLKR(outstanding);
+    if (outstanding > 0) {
+      balDueEl.className = 'kpi-value text-danger';
+    } else {
+      balDueEl.className = 'kpi-value text-success';
+    }
+
+    const tbody = document.getElementById('tbody-customer-ledger');
+    tbody.innerHTML = '';
+
+    if (rentals.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-muted">No rental agreements found for this customer.</td></tr>`;
+    } else {
+      rentals.forEach((r) => {
+        const tr = document.createElement('tr');
+        const toolName = r.tool ? r.tool.name : 'Machinery';
+        const bal = r.balanceDue || Math.max(0, r.totalAmount - (r.paidAmount || 0));
+        const statusBadge = getStatusBadge(r.status);
+        const balBadge = bal > 0
+          ? `<span class="badge badge-warning" style="background:#fff7ed; color:#c2410c; border:1px solid #fed7aa; font-weight:800;">${formatLKR(bal)} DUE</span>`
+          : `<span class="badge badge-active" style="background:#ecfdf5; color:#059669; border:1px solid #a7f3d0;"><i class="fa-solid fa-check"></i> PAID</span>`;
+
+        tr.innerHTML = `
+          <td><strong class="text-gold">${r.rentalCode}</strong></td>
+          <td>${toolName}</td>
+          <td><small>${formatDate(r.startDate)} &rarr; ${formatDate(r.dueDate)}</small></td>
+          <td><strong>${formatLKR(r.totalAmount)}</strong></td>
+          <td class="text-success font-bold">${formatLKR(r.paidAmount || 0)}</td>
+          <td>${balBadge}</td>
+          <td>${statusBadge}</td>
+          <td>
+            <div style="display:flex; gap:4px;">
+              ${
+                bal > 0
+                  ? `<button class="btn btn-xs btn-primary btn-cta" onclick="closeModal('modal-customer-profile'); openSettleBalanceModal('${r._id}')" title="Settle Due" style="background:#d97706; border-color:#b45309; color:#fff;"><i class="fa-solid fa-hand-holding-dollar"></i> Settle</button>`
+                  : ''
+              }
+              <button class="btn btn-xs btn-outline btn-cta" onclick="closeModal('modal-customer-profile'); openInvoiceModal('${r._id}')" title="View Invoice"><i class="fa-solid fa-file-invoice"></i> Bill</button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    openModal('modal-customer-profile');
+  } catch (err) {
+    showToast('Failed to load customer profile ledger', 'error');
+  }
+}
 
 
 
@@ -3377,9 +3873,13 @@ function renderCustomerLeasesTable(leases) {
   leases.forEach((l) => {
     const tr = document.createElement('tr');
     const statusBadge = getStatusBadge(l.status);
-    const depositBadge = `<span class="badge ${l.depositStatus === 'Held' ? 'badge-active' : 'badge-completed'}">${l.depositStatus}</span>`;
     const toolName = l.tool ? l.tool.name : 'Heavy Machinery';
     const serial = l.tool ? l.tool.serialNumber : 'N/A';
+
+    const balDue = l.balanceDue !== undefined ? l.balanceDue : Math.max(0, (l.totalAmount || 0) - (l.paidAmount || 0));
+    const balBadge = balDue > 0
+      ? `<span class="badge badge-warning" style="background:#fff7ed; color:#c2410c; border:1px solid #fed7aa; font-weight:800;">${formatLKR(balDue)} DUE</span>`
+      : `<span class="badge badge-active" style="background:#ecfdf5; color:#059669; border:1px solid #a7f3d0;"><i class="fa-solid fa-check"></i> PAID</span>`;
 
     tr.innerHTML = `
       <td><strong class="text-gold" style="font-size:13px;">${l.rentalCode}</strong></td>
@@ -3391,18 +3891,21 @@ function renderCustomerLeasesTable(leases) {
         <div style="font-size:12px; color:#475569;"><strong>Start:</strong> ${formatDate(l.startDate)}</div>
         <div style="font-size:12px;" class="${l.status === 'Overdue' ? 'text-danger font-bold' : ''}"><strong>Due:</strong> ${formatDate(l.dueDate)}</div>
       </td>
-      <td>
-        <span class="badge" style="${l.deliveryMode === 'Site Delivery' ? 'background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe;' : 'background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0;'}">
-          <i class="fa-solid ${l.deliveryMode === 'Site Delivery' ? 'fa-truck' : 'fa-shop'}"></i> ${l.deliveryMode}
-        </span>
-      </td>
       <td><strong style="color:#0f172a; font-size:13.5px;">${formatLKR(l.totalAmount)}</strong></td>
-      <td>${depositBadge}</td>
+      <td><strong class="text-success" style="font-size:13px;">${formatLKR(l.paidAmount || 0)}</strong></td>
+      <td>${balBadge}</td>
       <td>${statusBadge}</td>
       <td>
         <div class="action-btn-group">
+          ${
+            balDue > 0
+              ? `<button class="btn btn-xs btn-primary btn-cta" onclick="openSettleBalanceModal('${l._id}')" title="Pay Remaining Balance Online" style="background:#d97706; border-color:#b45309; color:#fff;">
+                   <i class="fa-solid fa-credit-card"></i> Pay Balance
+                 </button>`
+              : ''
+          }
           <a href="${API_BASE}/rentals/${l._id}/pdf" target="_blank" class="btn btn-xs btn-outline btn-cta" title="Direct PDF Tax Invoice Download">
-            <i class="fa-solid fa-file-pdf text-danger"></i> PDF Bill
+            <i class="fa-solid fa-file-pdf text-danger"></i> PDF
           </a>
           <button class="btn btn-xs btn-gold btn-cta" onclick="openInvoiceModal('${l._id}')" title="View & Print Official Bilingual Bill">
             <i class="fa-solid fa-file-invoice"></i> Bill / බිල්පත
@@ -3524,7 +4027,7 @@ function renderInvoice() {
 
   const clientName = r.user_id ? r.user_id.name : r.customer ? r.customer.name : (isSi ? 'පාරිභෝගිකයා' : 'Valued Client');
   const clientCompany = r.user_id ? (r.user_id.company_name || 'Individual Contractor') : (r.customer ? r.customer.companyName : 'N/A');
-  const clientNic = r.user_id ? r.user_id.nic_or_passport : (r.customer ? r.customer.nicOrPassport : 'N/A');
+  const clientNic = r.customer_nic || (r.customer ? r.customer.nicOrPassport : (r.user_id ? r.user_id.nic_or_passport : 'N/A'));
   const clientPhone = r.user_id ? r.user_id.phone_number : (r.customer ? r.customer.phone : 'N/A');
   const clientAddress = r.user_id ? (r.user_id.address || r.deliveryAddress) : (r.customer ? r.customer.address : r.deliveryAddress);
 
@@ -3553,6 +4056,18 @@ function renderInvoice() {
   const depositStatusText = isSi
     ? (r.depositStatus === 'Held' ? 'සුරක්ෂිතව තබා ඇත (Held)' : r.depositStatus === 'Refunded' ? 'ආපසු ගෙවන ලදී (Refunded)' : 'අඩු කරන ලදී (Deducted)')
     : r.depositStatus.toUpperCase();
+
+  const paidAmt = r.paidAmount !== undefined ? r.paidAmount : (r.paymentStatus === 'Paid' ? r.totalAmount : 0);
+  const balDue = r.balanceDue !== undefined ? r.balanceDue : Math.max(0, (r.totalAmount || 0) - paidAmt);
+
+  let payStatusBadgeHtml = '';
+  if (balDue === 0 || r.paymentStatus === 'Paid') {
+    payStatusBadgeHtml = `<span class="badge badge-active" style="font-weight:700;">${isSi ? 'සම්පූර්ණයෙන්ම ගෙවා ඇත (PAID)' : 'PAID IN FULL'}</span>`;
+  } else if (paidAmt > 0) {
+    payStatusBadgeHtml = `<span class="badge badge-warning" style="background:#fff7ed; color:#c2410c; border:1px solid #fed7aa; font-weight:800;">${isSi ? 'කොටසක් ගෙවා ඇත (PARTIALLY PAID)' : 'PARTIALLY PAID'}</span>`;
+  } else {
+    payStatusBadgeHtml = `<span class="badge badge-maintenance" style="font-weight:700;">${isSi ? 'නොගෙවූ (PENDING)' : 'PAYMENT PENDING'}</span>`;
+  }
 
   const container = document.getElementById('invoice-rendered-content');
   if (!container) return;
@@ -3584,7 +4099,7 @@ function renderInvoice() {
         <h4><i class="fa-solid fa-user-tie text-gold"></i> ${isSi ? 'පාරිභෝගික / කොන්ත්‍රාත්කරු විස්තරය' : 'LESSEE / CUSTOMER INFORMATION'}</h4>
         <p><strong>${isSi ? 'නම:' : 'Name:'}</strong> ${clientName}</p>
         <p><strong>${isSi ? 'ආයතනය / සමාගම:' : 'Company:'}</strong> ${clientCompany}</p>
-        <p><strong>${isSi ? 'ජා.හැ.අංකය / Passport:' : 'NIC / Passport:'}</strong> ${clientNic}</p>
+        <p><strong>${isSi ? 'ජා.හැ.අංකය / NIC / Passport:' : 'NIC / Passport:'}</strong> <span style="font-family:monospace; font-weight:800; color:#0f172a; background:#e2e8f0; padding:1px 6px; border-radius:4px;">${clientNic}</span></p>
         <p><strong>${isSi ? 'දුරකථන අංකය:' : 'Phone Number:'}</strong> ${clientPhone}</p>
         <p><strong>${isSi ? 'වැඩබිම් ලිපිනය:' : 'Site Location:'}</strong> ${r.siteLocation || clientAddress || 'Colombo Site'}</p>
       </div>
@@ -3681,25 +4196,36 @@ function renderInvoice() {
       </tbody>
     </table>
 
-    <!-- TOTALS SUMMARY -->
+    <!-- TOTALS & OUTSTANDING BALANCE SUMMARY -->
     <div class="inv-totals-box">
       <table class="inv-totals-table">
         <tr>
-          <td>${isSi ? 'උප එකතුව (Sub Total):' : 'Gross Subtotal:'}</td>
-          <td class="cost-val">${formatLKR(r.totalAmount)}</td>
+          <td>${isSi ? 'මුළු ගිවිසුම් වටිනාකම (Gross Total):' : 'Gross Total Bill:'}</td>
+          <td class="cost-val"><strong>${formatLKR(r.totalAmount)}</strong></td>
         </tr>
         <tr>
           <td>${isSi ? 'ගෙවීම් තත්ත්වය:' : 'Payment Status:'}</td>
-          <td class="cost-val text-success"><strong>${isSi ? 'සම්පූර්ණයෙන්ම ගෙවා ඇත (PAID)' : 'PAID IN FULL'}</strong></td>
+          <td class="cost-val">${payStatusBadgeHtml}</td>
         </tr>
         <tr>
-          <td>${isSi ? 'තැන්පතු තත්ත්වය:' : 'Deposit Balance:'}</td>
-          <td class="cost-val text-gold"><strong>${formatLKR(r.depositAmount)} (${r.depositStatus})</strong></td>
+          <td>${isSi ? 'ගෙවන ලද මුදල:' : 'Amount Paid to Date:'}</td>
+          <td class="cost-val text-success"><strong>${formatLKR(paidAmt)}</strong></td>
         </tr>
-        <tr class="total-row">
-          <td>${isSi ? 'මුළු බේරුම්කරණ මුදල:' : 'Net Invoice Total:'}</td>
-          <td class="cost-val" style="color:#d97706; font-size:18px;">${formatLKR(r.totalAmount)}</td>
+        <tr class="total-row" style="background:#fffbeb;">
+          <td>${isSi ? 'ගෙවිය යුතු හිඟ ශේෂය (Balance Due):' : 'Outstanding Balance Due:'}</td>
+          <td class="cost-val" style="color:${balDue > 0 ? '#dc2626' : '#16a34a'}; font-size:18px; font-weight:800;">
+            ${formatLKR(balDue)}
+          </td>
         </tr>
+        ${
+          balDue > 0
+            ? `<tr>
+                <td colspan="2" style="text-align:right; font-size:11px; color:#92400e; padding-top:4px;">
+                  <i class="fa-solid fa-circle-info"></i> ${isSi ? `හිඟ මුදල පාරිභෝගික ජා.හැ.අංකයට (${clientNic}) බැර කර ඇත.` : `Remaining balance is recorded against Customer NIC: ${clientNic}`}
+                </td>
+              </tr>`
+            : ''
+        }
       </table>
     </div>
 
