@@ -1261,15 +1261,24 @@ function renderActiveTab() {
 // ----------------------------------------------------
 // 3. DIGITAL SIGNATURE PAD (HTML5 Canvas)
 // ----------------------------------------------------
-let sigCanvas, sigCtx, isDrawing = false;
+let sigCanvas, sigCtx, isDrawing = false, signaturePointCount = 0;
 
 function initSignaturePad() {
   sigCanvas = document.getElementById('signature-pad');
   if (!sigCanvas) return;
+
+  // Responsive width adaptation based on modal container width
+  const containerWidth = sigCanvas.parentElement ? sigCanvas.parentElement.clientWidth : 550;
+  if (containerWidth > 200) {
+    sigCanvas.width = Math.min(containerWidth - 4, 760);
+  }
+  sigCanvas.height = 100;
+
   sigCtx = sigCanvas.getContext('2d');
   sigCtx.strokeStyle = '#f59e0b';
   sigCtx.lineWidth = 2.5;
   sigCtx.lineCap = 'round';
+  sigCtx.lineJoin = 'round';
 
   function getPos(e) {
     const rect = sigCanvas.getBoundingClientRect();
@@ -1295,6 +1304,10 @@ function initSignaturePad() {
     const pos = getPos(e);
     sigCtx.lineTo(pos.x, pos.y);
     sigCtx.stroke();
+    signaturePointCount++;
+    if (signaturePointCount >= 12) {
+      sigCanvas.classList.remove('sig-error');
+    }
   }
 
   function stop(e) {
@@ -1303,6 +1316,10 @@ function initSignaturePad() {
       sigCtx.closePath();
     }
   }
+
+  sigCanvas.removeEventListener('mousedown', start);
+  sigCanvas.removeEventListener('mousemove', move);
+  window.removeEventListener('mouseup', stop);
 
   sigCanvas.addEventListener('mousedown', start);
   sigCanvas.addEventListener('mousemove', move);
@@ -1314,14 +1331,21 @@ function initSignaturePad() {
 
   const btnClear = document.getElementById('btn-clear-sig');
   if (btnClear) {
-    btnClear.addEventListener('click', () => {
+    btnClear.onclick = (e) => {
+      e.preventDefault();
       sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
-    });
+      signaturePointCount = 0;
+      sigCanvas.classList.remove('sig-error');
+    };
   }
 }
 
+function isSignatureValid() {
+  return signaturePointCount >= 12;
+}
+
 function getSignatureDataUrl() {
-  if (!sigCanvas) return '';
+  if (!sigCanvas || !isSignatureValid()) return '';
   return sigCanvas.toDataURL('image/png');
 }
 
@@ -2529,7 +2553,10 @@ function setRentWizardStep(step) {
   for (let i = 1; i <= 3; i++) {
     const ind = document.getElementById(`rent-step-ind-${i}`);
     const pane = document.getElementById(`rent-pane-${i}`);
-    if (ind) ind.classList.toggle('active', i === step);
+    if (ind) {
+      ind.classList.toggle('active', i === step);
+      ind.classList.toggle('completed', i < step);
+    }
     if (pane) pane.classList.toggle('active', i === step);
   }
 
@@ -2541,7 +2568,10 @@ function setRentWizardStep(step) {
   if (btnNext) btnNext.style.display = step < 3 ? 'inline-flex' : 'none';
   if (btnSubmit) btnSubmit.style.display = step === 3 ? 'inline-flex' : 'none';
 
-  if (step === 3) recalculateRentalTotal();
+  if (step === 3) {
+    recalculateRentalTotal();
+    setTimeout(initSignaturePad, 150);
+  }
 }
 
 const btnRentNextEl = document.getElementById('btn-rent-next');
@@ -2617,14 +2647,20 @@ if (btnRentPrevEl) {
   });
 }
 
-// Allow clickable step navigation
+// Allow clickable backward & step progress navigation
 [1, 2, 3].forEach((stepNum) => {
   const ind = document.getElementById(`rent-step-ind-${stepNum}`);
   if (ind) {
     ind.style.cursor = 'pointer';
+    ind.title = `Jump to Step ${stepNum}`;
     ind.addEventListener('click', () => {
-      if (stepNum < rentWizardStep || document.getElementById('rental-tool-select')?.value) {
+      // Allow direct navigation to previous steps or next step if current step valid
+      if (stepNum < rentWizardStep) {
         setRentWizardStep(stepNum);
+      } else if (stepNum === 2 && document.getElementById('rental-tool-select')?.value) {
+        setRentWizardStep(2);
+      } else if (stepNum === 3 && document.getElementById('rental-tool-select')?.value && document.getElementById('rental-site-location')?.value) {
+        setRentWizardStep(3);
       }
     });
   }
@@ -2645,6 +2681,8 @@ function setRentalPaymentMode(mode) {
   }
 
   const input = document.getElementById('rental-partial-pay-input');
+  document.querySelectorAll('.quick-partial-btn').forEach((b) => b.classList.remove('active'));
+
   if (mode === 'later' && input) {
     input.value = 0;
   } else if (mode === 'full' && input) {
@@ -2654,17 +2692,30 @@ function setRentalPaymentMode(mode) {
   recalculateRentalTotal();
 }
 
-function setQuickPartial(type) {
-  const opt = document.getElementById('rental-tool-select').selectedOptions[0];
-  const deposit = opt ? Number(opt.dataset.deposit) || 0 : 0;
-  const grandTotal = Number(document.getElementById('calc-total-amount').dataset.val) || 0;
+function setQuickPartial(type, btnEl) {
+  const opt = document.getElementById('rental-tool-select')?.selectedOptions[0];
+  const deposit = opt ? (Number(opt.dataset.deposit) || 0) : 0;
+  const grandTotal = Number(document.getElementById('calc-total-amount')?.dataset.val) || 0;
   const input = document.getElementById('rental-partial-pay-input');
+
+  document.querySelectorAll('.quick-partial-btn').forEach((b) => b.classList.remove('active'));
+  if (btnEl) {
+    btnEl.classList.add('active');
+  } else {
+    const defaultBtn = type === 'deposit' ? document.getElementById('btn-quick-deposit') : document.getElementById('btn-quick-50');
+    if (defaultBtn) defaultBtn.classList.add('active');
+  }
 
   if (type === 'deposit') {
     if (input) input.value = deposit;
   } else if (type === '50') {
     if (input) input.value = Math.round(grandTotal * 0.5);
   }
+  recalculateRentalTotal();
+}
+
+function handlePartialInputCustom() {
+  document.querySelectorAll('.quick-partial-btn').forEach((b) => b.classList.remove('active'));
   recalculateRentalTotal();
 }
 
@@ -2909,6 +2960,13 @@ function recalculateRentalTotal() {
   totalAmountEl.textContent = formatLKR(grandTotal);
   totalAmountEl.dataset.val = grandTotal;
 
+  const summaryRentEl = document.getElementById('calc-summary-rent');
+  const summaryDepositEl = document.getElementById('calc-summary-deposit');
+  const summaryTotalEl = document.getElementById('calc-summary-total');
+  if (summaryRentEl) summaryRentEl.textContent = formatLKR(rentAmount);
+  if (summaryDepositEl) summaryDepositEl.textContent = formatLKR(deposit);
+  if (summaryTotalEl) summaryTotalEl.textContent = formatLKR(grandTotal);
+
   // Calculate payment split based on mode
   let payingNow = grandTotal;
   const partialInput = document.getElementById('rental-partial-pay-input');
@@ -3053,6 +3111,16 @@ document.getElementById('form-rental').addEventListener('submit', async (e) => {
   const deliveryMode = document.getElementById('rental-delivery-mode').value;
   const deliveryFee = deliveryMode === 'Site Delivery' ? 3500 : 0;
   const digitalSignature = getSignatureDataUrl();
+
+  if (!isSignatureValid() || !digitalSignature) {
+    showToast('Please provide a complete signature on the digital signature pad (*)', 'error');
+    const canvas = document.getElementById('signature-pad');
+    if (canvas) {
+      canvas.classList.add('sig-error');
+      canvas.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    return;
+  }
 
   const grandTotal = Number(document.getElementById('calc-total-amount').dataset.val) || 0;
   let paidAmount = grandTotal;

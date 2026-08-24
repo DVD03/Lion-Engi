@@ -1483,7 +1483,7 @@
             </div>
 
             <!-- Partial Payment & Terms Selection -->
-            <div class="payment-terms-box mt-3" style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px;">
+            <div class="payment-terms-box mt-3" style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:14px;">
               <label style="font-size:12.5px; font-weight:700; color:#0f172a; margin-bottom:8px; display:block;">
                 <i class="fa-solid fa-money-bill-transfer text-gold"></i> Payment Terms &amp; Advance Option *
               </label>
@@ -1499,31 +1499,57 @@
                 </label>
               </div>
 
-              <div id="rental-partial-amount-group" style="display:none; margin-top:10px; border-top:1px dashed #cbd5e1; padding-top:10px;">
+              <div id="rental-partial-amount-group" style="display:none; margin-top:10px; border-top:1px dashed #cbd5e1; padding-top:12px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
                   <label style="font-size:12px; font-weight:700; color:#334155; margin-bottom:0;">Initial Paid Amount (LKR) *</label>
-                  <span style="font-size:11px; color:#64748b;">(Remaining balance due on NIC)</span>
+                  <span style="font-size:11px; color:#64748b;">(Remaining balance due on Pickup / Delivery)</span>
                 </div>
-                <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
-                  <input type="number" id="rental-partial-pay-input" class="form-control" style="flex:1; min-width:140px;" placeholder="0" min="0" oninput="recalculateRentalTotal()">
-                  <button type="button" class="btn btn-sm btn-outline" onclick="setQuickPartial('deposit')">Deposit Only</button>
-                  <button type="button" class="btn btn-sm btn-outline" onclick="setQuickPartial('50')">50%</button>
+                <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                  <input type="number" id="rental-partial-pay-input" class="form-control" style="flex:1; min-width:140px; font-weight:700;" placeholder="0" min="0" oninput="handlePartialInputCustom()">
+                  <button type="button" class="quick-partial-btn" id="btn-quick-deposit" onclick="setQuickPartial('deposit', this)">
+                    <i class="fa-solid fa-shield-halved"></i> Deposit Only
+                  </button>
+                  <button type="button" class="quick-partial-btn" id="btn-quick-50" onclick="setQuickPartial('50', this)">
+                    <i class="fa-solid fa-percent"></i> 50% Advance
+                  </button>
                 </div>
               </div>
 
-              <!-- Live Balance Summary Banner -->
-              <div class="mt-2" style="background:#0f172a; color:#ffffff; border-radius:6px; padding:10px 12px; font-size:12px;">
-                <div style="display:flex; justify-content:space-between; margin-bottom:3px;">
-                  <span style="color:#94a3b8;">Amount Paying Now:</span>
-                  <strong class="text-success" id="calc-paying-now">LKR 0</strong>
+              <!-- Comprehensive Live Balance Summary Breakdown -->
+              <div class="mt-3" style="background:#0f172a; color:#ffffff; border-radius:10px; padding:14px 16px; font-size:12.5px; box-shadow:0 4px 14px rgba(0,0,0,0.12);">
+                <div style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.8px; color:#f59e0b; margin-bottom:10px; display:flex; align-items:center; gap:6px;">
+                  <i class="fa-solid fa-calculator"></i> Payment Calculation &amp; Settlement Summary
                 </div>
-                <div style="display:flex; justify-content:space-between; margin-bottom:3px;">
-                  <span style="color:#94a3b8;">Remaining Balance Due on Bill:</span>
-                  <strong class="text-gold" id="calc-bill-balance-due">LKR 0</strong>
+                
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px 12px; margin-bottom:10px;">
+                  <div style="display:flex; justify-content:space-between; background:rgba(255,255,255,0.06); padding:6px 10px; border-radius:6px;">
+                    <span style="color:#94a3b8;">Rental Charges:</span>
+                    <strong id="calc-summary-rent" style="color:#ffffff;">LKR 0</strong>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; background:rgba(255,255,255,0.06); padding:6px 10px; border-radius:6px;">
+                    <span style="color:#94a3b8;">Security Deposit:</span>
+                    <strong id="calc-summary-deposit" style="color:#fde68a;">LKR 0</strong>
+                  </div>
                 </div>
-                <div style="display:flex; justify-content:space-between; font-size:11px; color:#cbd5e1; border-top:1px solid #334155; padding-top:5px; margin-top:4px;">
-                  <span>Customer Total Outstanding Balance (Post Booking):</span>
-                  <strong id="calc-customer-post-balance">LKR 0</strong>
+
+                <div style="border-top:1px solid rgba(255,255,255,0.12); padding-top:8px; display:flex; flex-direction:column; gap:6px;">
+                  <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="color:#cbd5e1; font-weight:600;">Total Contract Bill:</span>
+                    <strong id="calc-summary-total" style="color:#38bdf8; font-size:14px; font-weight:800;">LKR 0</strong>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="color:#cbd5e1; font-weight:600;">Amount Paying Now (Advance):</span>
+                    <strong id="calc-paying-now" class="text-success" style="font-size:14px; font-weight:800;">LKR 0</strong>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(239,68,68,0.14); padding:7px 10px; border-radius:6px; border:1px solid rgba(239,68,68,0.3);">
+                    <span style="color:#fca5a5; font-weight:700;">Remaining Balance Due (on Pickup / Delivery):</span>
+                    <strong id="calc-bill-balance-due" style="color:#f87171; font-size:15px; font-weight:800;">LKR 0</strong>
+                  </div>
+                </div>
+
+                <div style="display:flex; justify-content:space-between; font-size:11.5px; color:#94a3b8; border-top:1px solid rgba(255,255,255,0.1); padding-top:6px; margin-top:8px;">
+                  <span>Customer Post-Booking Total Debt (NIC):</span>
+                  <strong id="calc-customer-post-balance" style="color:#e2e8f0;">LKR 0</strong>
                 </div>
               </div>
             </div>
@@ -1539,10 +1565,15 @@
 
             <div class="signature-section mt-3">
               <div class="sig-header">
-                <label><i class="fa-solid fa-signature"></i> Customer Digital Agreement E-Signature *</label>
-                <button type="button" class="btn btn-sm btn-outline" id="btn-clear-sig">Clear Signature</button>
+                <div>
+                  <label style="margin-bottom:2px;"><i class="fa-solid fa-signature text-gold"></i> Customer Digital Agreement E-Signature *</label>
+                  <p class="text-muted" style="font-size:11px; margin:0;">Please sign clearly using mouse or touch screen (minimum stroke length required)</p>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline" id="btn-clear-sig">
+                  <i class="fa-solid fa-rotate-left"></i> Clear
+                </button>
               </div>
-              <canvas id="signature-pad" class="signature-canvas" width="500" height="110"></canvas>
+              <canvas id="signature-pad" class="signature-canvas" width="600" height="100"></canvas>
             </div>
           </div>
         </div>
