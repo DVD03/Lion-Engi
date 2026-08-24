@@ -2537,12 +2537,98 @@ function setRentWizardStep(step) {
   const btnNext = document.getElementById('btn-rent-next');
   const btnSubmit = document.getElementById('btn-submit-rental');
 
-  btnPrev.style.display = step > 1 ? 'inline-flex' : 'none';
-  btnNext.style.display = step < 3 ? 'inline-flex' : 'none';
-  btnSubmit.style.display = step === 3 ? 'inline-flex' : 'none';
+  if (btnPrev) btnPrev.style.display = step > 1 ? 'inline-flex' : 'none';
+  if (btnNext) btnNext.style.display = step < 3 ? 'inline-flex' : 'none';
+  if (btnSubmit) btnSubmit.style.display = step === 3 ? 'inline-flex' : 'none';
 
   if (step === 3) recalculateRentalTotal();
 }
+
+const btnRentNextEl = document.getElementById('btn-rent-next');
+if (btnRentNextEl) {
+  btnRentNextEl.addEventListener('click', async () => {
+    if (rentWizardStep === 1) {
+      const toolId = document.getElementById('rental-tool-select')?.value;
+      const start = document.getElementById('rental-start-date')?.value;
+      const due = document.getElementById('rental-due-date')?.value;
+
+      if (!toolId) {
+        showToast('Please select an equipment / tool to rent', 'error');
+        return;
+      }
+      if (!start) {
+        showToast('Please select a Rental Start Date', 'error');
+        return;
+      }
+      if (!due) {
+        showToast('Please select a Due / Expected Return Date', 'error');
+        return;
+      }
+      if (due <= start) {
+        showToast('Due date must be after the start date', 'error');
+        return;
+      }
+
+      try {
+        const chk = await fetch(`${API_BASE}/rentals/validate-availability`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ toolId, startDate: start, dueDate: due }),
+        }).then((r) => r.json());
+
+        const fb = document.getElementById('availability-feedback');
+        if (chk && !chk.available) {
+          if (fb) {
+            fb.style.display = 'block';
+            fb.style.background = 'rgba(239, 68, 68, 0.2)';
+            fb.style.color = '#f87171';
+            fb.textContent = `❌ ${chk.reason || 'Tool unavailable for selected dates'}`;
+          }
+          showToast(chk.reason || 'Tool unavailable for dates', 'error');
+          return;
+        } else if (fb) {
+          fb.style.display = 'block';
+          fb.style.background = 'rgba(16, 185, 129, 0.2)';
+          fb.style.color = '#34d399';
+          fb.textContent = '✅ Selected dates verified & equipment ready for dispatch!';
+        }
+      } catch (err) {
+        console.warn('Availability check bypassed:', err);
+      }
+
+      setRentWizardStep(2);
+    } else if (rentWizardStep === 2) {
+      const site = document.getElementById('rental-site-location')?.value.trim();
+      if (!site) {
+        showToast('Please provide the job site or delivery address', 'error');
+        return;
+      }
+      setRentWizardStep(3);
+    }
+  });
+}
+
+const btnRentPrevEl = document.getElementById('btn-rent-prev');
+if (btnRentPrevEl) {
+  btnRentPrevEl.addEventListener('click', () => {
+    if (rentWizardStep > 1) {
+      setRentWizardStep(rentWizardStep - 1);
+    }
+  });
+}
+
+// Allow clickable step navigation
+[1, 2, 3].forEach((stepNum) => {
+  const ind = document.getElementById(`rent-step-ind-${stepNum}`);
+  if (ind) {
+    ind.style.cursor = 'pointer';
+    ind.addEventListener('click', () => {
+      if (stepNum < rentWizardStep || document.getElementById('rental-tool-select')?.value) {
+        setRentWizardStep(stepNum);
+      }
+    });
+  }
+});
 
 function setRentalPaymentMode(mode) {
   currentRentalPayMode = mode;
