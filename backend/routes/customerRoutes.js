@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Customer = require('../models/Customer');
+const User = require('../models/User');
 const Rental = require('../models/Rental');
 const { protect, requireRole } = require('../middleware/authMiddleware');
 
@@ -9,7 +10,22 @@ const { protect, requireRole } = require('../middleware/authMiddleware');
 router.get('/by-nic/:nic', async (req, res) => {
   try {
     const cleanNic = req.params.nic.trim().toUpperCase();
-    const customer = await Customer.findOne({ nicOrPassport: cleanNic });
+    let customer = await Customer.findOne({ nicOrPassport: cleanNic });
+
+    if (!customer) {
+      // Check User accounts
+      const user = await User.findOne({ nic_or_passport: cleanNic });
+      if (user) {
+        customer = await Customer.create({
+          name: user.name,
+          companyName: user.company_name || '',
+          phone: user.phone_number || '+94 77 000 0000',
+          nicOrPassport: cleanNic,
+          address: user.address || 'Sri Lanka',
+          outstandingBalance: 0,
+        });
+      }
+    }
 
     if (!customer) {
       return res.status(404).json({ success: false, message: 'Customer with this NIC not found' });

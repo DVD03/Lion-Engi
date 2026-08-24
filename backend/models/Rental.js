@@ -126,7 +126,7 @@ const rentalSchema = new mongoose.Schema(
     },
     paymentStatus: {
       type: String,
-      enum: ['Paid', 'Pending', 'Partially Paid'],
+      enum: ['Paid', 'Pending', 'Partially Paid', 'Credit'],
       default: 'Paid',
     },
     depositStatus: {
