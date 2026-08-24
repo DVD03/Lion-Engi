@@ -168,7 +168,8 @@ const sampleTools = [
 
 async function seedDatabase() {
   try {
-    await mongoose.connect(process.env.MONGODB_URI, { serverSelectionTimeoutMS: 10000 });
+    const connectDB = require('./config/db');
+    await connectDB();
     console.log('✅ Connected to MongoDB Atlas for seeding...');
 
     try {
